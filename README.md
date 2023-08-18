@@ -1,6 +1,7 @@
 # LoopMatcher (aka LASLO) v1.2.2 - README
 
 [![Java CI with Maven](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml)
+[![CodeQL](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml)
 
 ## Introduction
 
