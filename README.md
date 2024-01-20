@@ -1,5 +1,11 @@
 # LoopMatcher (aka LASLO) v1.3.3 - README
 
+[![CodeQL](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml)
+[![Java CI with Maven](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml)
+
+[![Java CI with Maven](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml)
+[![CodeQL](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml)
+
 ## Introduction
 
 Multi-threaded application that searches for hairpin structures in cDNA / mRNA sequences (FASTA or GenBank) with specific consensus sequences in the loop. It implements RNAfold to predict the structure of the sequence, and UShuffle to generate random sequences with conservation of the k-nucleotide frequency.
