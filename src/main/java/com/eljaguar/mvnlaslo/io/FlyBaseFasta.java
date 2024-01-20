@@ -258,7 +258,7 @@ public class FlyBaseFasta extends SourceFile {
         //}
 
         // get location
-        index = idSequence.indexOf(FlyBaseFasta.getLOCATION(), 0);
+        index = idSequence.indexOf(FlyBaseFasta.getLOCATION());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -274,7 +274,7 @@ public class FlyBaseFasta extends SourceFile {
         }
 
         // get name
-        index = idsequence.indexOf(FlyBaseFasta.getNAME(), 0);
+        index = idsequence.indexOf(FlyBaseFasta.getNAME());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -290,7 +290,7 @@ public class FlyBaseFasta extends SourceFile {
         }
 
         // get dbxref
-        index = idsequence.indexOf(FlyBaseFasta.getDBXREF(), 0);
+        index = idsequence.indexOf(FlyBaseFasta.getDBXREF());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -306,7 +306,7 @@ public class FlyBaseFasta extends SourceFile {
         }
 
         // get score
-        index = idsequence.indexOf(FlyBaseFasta.getSCORE(), 0);
+        index = idsequence.indexOf(FlyBaseFasta.getSCORE());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -322,7 +322,7 @@ public class FlyBaseFasta extends SourceFile {
         }
 
         // get checksum
-        index = idsequence.indexOf(FlyBaseFasta.getCHECKSUM(), 0);
+        index = idsequence.indexOf(FlyBaseFasta.getCHECKSUM());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -338,7 +338,7 @@ public class FlyBaseFasta extends SourceFile {
         }
 
         // get GeneID
-        index = idsequence.indexOf(FlyBaseFasta.getGENE_ID(), 0);
+        index = idsequence.indexOf(FlyBaseFasta.getGENE_ID());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -354,7 +354,7 @@ public class FlyBaseFasta extends SourceFile {
         }
 
         // get release
-        index = idsequence.indexOf(FlyBaseFasta.getRELEASE(), 0);
+        index = idsequence.indexOf(FlyBaseFasta.getRELEASE());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -370,7 +370,7 @@ public class FlyBaseFasta extends SourceFile {
         }
 
         // get specie
-        index = idsequence.indexOf(FlyBaseFasta.getSPECIES(), 0);
+        index = idsequence.indexOf(FlyBaseFasta.getSPECIES());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);

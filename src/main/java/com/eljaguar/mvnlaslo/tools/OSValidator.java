@@ -20,21 +20,17 @@ package com.eljaguar.mvnlaslo.tools;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import static java.lang.System.out;
 
 /**
- *
  * @author Unknown
  */
 public class OSValidator {
 
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
-    /**
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
+    public static void test() {
 
         out.println(OS);
 
@@ -54,7 +50,6 @@ public class OSValidator {
     }
 
     /**
-     *
      * @return
      */
     public static boolean isWindows() {
@@ -62,7 +57,6 @@ public class OSValidator {
     }
 
     /**
-     *
      * @return
      */
     public static boolean isMac() {
@@ -70,7 +64,6 @@ public class OSValidator {
     }
 
     /**
-     *
      * @return
      */
     public static boolean isUnix() {
@@ -78,7 +71,6 @@ public class OSValidator {
     }
 
     /**
-     *
      * @return
      */
     public static boolean isSolaris() {
@@ -86,7 +78,6 @@ public class OSValidator {
     }
 
     /**
-     *
      * @return
      */
     public static String getOS() {
@@ -104,7 +95,6 @@ public class OSValidator {
     }
 
     /**
-     *
      * @return
      */
     @SuppressWarnings({"null", "NestedAssignment"})

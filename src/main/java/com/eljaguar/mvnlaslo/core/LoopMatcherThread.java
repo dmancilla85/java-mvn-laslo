@@ -23,13 +23,15 @@ import com.eljaguar.mvnlaslo.tools.OSValidator;
 import com.eljaguar.mvnlaslo.tools.RNAFoldConfiguration;
 import com.eljaguar.mvnlaslo.tools.RNAFoldInterface;
 import com.opencsv.CSVWriter;
-import static java.lang.System.out;
+import org.biojava.nbio.core.sequence.DNASequence;
+
 import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
-import org.biojava.nbio.core.sequence.DNASequence;
+
 import static com.eljaguar.mvnlaslo.core.SequenceAnalizer.beginFullMatching;
+import static java.lang.System.out;
 
 /**
  *
@@ -98,7 +100,7 @@ public class LoopMatcherThread implements Runnable {
       countThreads = 2 * OSValidator.getNumberOfCPUCores() + 1;
 
       out.println(java.text.MessageFormat.format(bundle
-               .getString("USING_N_CORES"), new Object[] {countThreads}));
+               .getString("USING_N_CORES"), countThreads));
       SEM = new Semaphore(countThreads);
       started = true;
     }
@@ -138,7 +140,7 @@ public class LoopMatcherThread implements Runnable {
       countThreads = 2 * OSValidator.getNumberOfCPUCores() + 1;
 
       out.println(java.text.MessageFormat.format(bundle
-               .getString("USING_N_CORES"), new Object[] {countThreads}));
+               .getString("USING_N_CORES"), countThreads));
       SEM = new Semaphore(countThreads);
       started = true;
     }
@@ -206,8 +208,8 @@ public class LoopMatcherThread implements Runnable {
 
       out.println(java.text.MessageFormat.format(
         getBundle()
-          .getString("ERROR_EX"), new Object[]{msg}));
-      out.println("1-Exception: " + ex.toString());
+          .getString("ERROR_EX"), msg));
+      out.println("1-Exception: " + ex);
     } finally {
       getSEM().release();
     }
@@ -234,8 +236,8 @@ public class LoopMatcherThread implements Runnable {
 
         out.println(java.text.MessageFormat.format(
           getBundle()
-            .getString("ERROR_EX"), new Object[]{msg}));
-        out.println("2-Exception: " + ex.toString());
+            .getString("ERROR_EX"), msg));
+        out.println("2-Exception: " + ex);
       } finally {
         getSEM().release();
       }

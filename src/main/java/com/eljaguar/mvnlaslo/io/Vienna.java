@@ -7,10 +7,11 @@ package com.eljaguar.mvnlaslo.io;
 
 import java.io.File;
 import java.io.IOException;
-import static java.lang.System.out;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
+
+import static java.lang.System.out;
 
 /**
  *
@@ -89,7 +90,7 @@ public class Vienna extends SourceFile {
     
     private boolean readViennaFile(File file) {
 
-        Object aux[];
+        Object[] aux;
 
         try {
             Stream<String> lines = Files.lines(Paths.get(file.getAbsolutePath()));
@@ -114,12 +115,11 @@ public class Vienna extends SourceFile {
         return true;
     }
 
-    public static void main(String[] args) {
-        String fName = "C:\\Users\\David\\Desktop\\TEST\\20Mar11-21-05-16_1.b";
+    public static void test(String filePath) {
         System.out.println();
         Vienna vienna = new Vienna(null);
         // Method #2 - Read file with a filter
-        vienna.readViennaFile(new File(fName));
+        vienna.readViennaFile(new File(filePath));
 
         System.out.println(vienna);
     }

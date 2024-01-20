@@ -17,23 +17,14 @@
  */
 package com.eljaguar.mvnlaslo.core;
 
-import com.eljaguar.mvnlaslo.io.BioMartFasta;
-import com.eljaguar.mvnlaslo.io.EnsemblFasta;
-import com.eljaguar.mvnlaslo.io.FlyBaseFasta;
-import com.eljaguar.mvnlaslo.io.GenBank;
-import com.eljaguar.mvnlaslo.io.Generic;
-import com.eljaguar.mvnlaslo.io.InputSequence;
-import com.eljaguar.mvnlaslo.io.SourceFile;
-import com.eljaguar.mvnlaslo.io.Vienna;
-import static java.lang.System.out;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import com.eljaguar.mvnlaslo.io.*;
 import org.apache.commons.lang3.StringUtils;
+
+import java.text.NumberFormat;
+import java.util.*;
+
 import static com.eljaguar.mvnlaslo.core.SequenceAnalizer.reverseSequence;
+import static java.lang.System.out;
 
 /**
  * Main class for stem-loops
@@ -603,7 +594,7 @@ public class StemLoop {
     Character a = getRnaHairpinSequence().charAt(getViennaStructure().lastIndexOf("("));
     Character b = getRnaHairpinSequence().charAt(getViennaStructure().indexOf(")"));
 
-    return a.toString() + b.toString();
+    return a.toString() + b;
   }
 
   /**
@@ -765,11 +756,7 @@ public class StemLoop {
       matchFirst = getRnaHairpinSequence().indexOf(reverseSequence(getLoop()));
       matchLast = getRnaHairpinSequence().lastIndexOf(reverseSequence(getLoop()));
 
-      if (matchFirst == matchLast) {
-        startPos = matchFirst;
-      } else {
-        startPos = matchLast;
-      }
+      startPos = matchLast;
     }
 
     try {

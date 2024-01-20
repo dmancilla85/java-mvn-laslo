@@ -16,20 +16,22 @@
  */
 package com.eljaguar.mvnlaslo.io;
 
+import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
+import org.biojava.nbio.core.sequence.DNASequence;
+import org.biojava.nbio.core.sequence.io.GenbankReaderHelper;
+import org.biojava.nbio.core.sequence.io.GenbankWriterHelper;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import static java.lang.System.out;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
-import org.biojava.nbio.core.sequence.DNASequence;
-import org.biojava.nbio.core.sequence.io.GenbankReaderHelper;
-import org.biojava.nbio.core.sequence.io.GenbankWriterHelper;
+
+import static java.lang.System.out;
 
 /**
  *
@@ -155,7 +157,7 @@ public class GenBank extends SourceFile {
             String proxyConn = getProxyConfiguration();
 
             if (proxyConn.length() > 0) {
-                String proxyParm[] = proxyConn.split(",");
+                String[] proxyParm = proxyConn.split(",");
 
                 // defined a proxy connection
                 System.setProperty("http.proxyHost", proxyParm[0].trim());

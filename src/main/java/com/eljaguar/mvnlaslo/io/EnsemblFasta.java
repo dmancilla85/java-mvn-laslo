@@ -118,7 +118,7 @@ public class EnsemblFasta extends SourceFile {
         }
 
         // get GeneID
-        index = idSequence.indexOf(getGENE(), 0);
+        index = idSequence.indexOf(getGENE());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -134,7 +134,7 @@ public class EnsemblFasta extends SourceFile {
         }
 
         // get Gene Biotype
-        index = idsequence.indexOf(getGENE_BIOTYPE(), 0);
+        index = idsequence.indexOf(getGENE_BIOTYPE());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -149,7 +149,7 @@ public class EnsemblFasta extends SourceFile {
             setGeneBiotype(aux.trim());
         }
         // get Trancript Biotype
-        index = idsequence.indexOf(EnsemblFasta.getTRANSCRIPT_BIOTYPE(), 0);
+        index = idsequence.indexOf(EnsemblFasta.getTRANSCRIPT_BIOTYPE());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -165,7 +165,7 @@ public class EnsemblFasta extends SourceFile {
         }
 
         // get Gene Symbol
-        index = idsequence.indexOf(EnsemblFasta.getGENE_SYMBOL(), 0);
+        index = idsequence.indexOf(EnsemblFasta.getGENE_SYMBOL());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
@@ -181,7 +181,7 @@ public class EnsemblFasta extends SourceFile {
         }
 
         // Description
-        index = idsequence.indexOf(EnsemblFasta.getDESCRIPTION(), 0);
+        index = idsequence.indexOf(EnsemblFasta.getDESCRIPTION());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);

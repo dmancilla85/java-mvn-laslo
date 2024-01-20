@@ -17,8 +17,11 @@
  */
 package com.eljaguar.mvnlaslo.gui;
 
-import java.io.*;
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -27,33 +30,21 @@ import javax.swing.*;
 public class TextAreaOutputStream
         extends OutputStream {
 
-// ****************************************************************************
-// INSTANCE MEMBERS
-// ****************************************************************************
-    private byte[] oneByte; // array for write(int val);
+    private final byte[] oneByte;
     private Appender appender; // most recent action
 
-    /**
-     *
-     * @param txtara
-     */
-    public TextAreaOutputStream(JTextArea txtara) {
-        this(txtara, 1000);
+    public TextAreaOutputStream(JTextArea textArea) {
+        this(textArea, 1000);
     }
 
-    /**
-     *
-     * @param txtara
-     * @param maxlin
-     */
-    public TextAreaOutputStream(JTextArea txtara, int maxlin) {
-        if (maxlin < 1) {
+    public TextAreaOutputStream(JTextArea textArea, int maxLine) {
+        if (maxLine < 1) {
             throw new 
         IllegalArgumentException("TextAreaOutputStream maximum lines must be " +
-                "positive (value=" + maxlin + ")");
+                "positive (value=" + maxLine + ")");
         }
         oneByte = new byte[1];
-        appender = new Appender(txtara, maxlin);
+        appender = new Appender(textArea, maxLine);
     }
 
     /**
@@ -65,65 +56,35 @@ public class TextAreaOutputStream
         }
     }
 
-    /**
-     *
-     */
     @Override
     public synchronized void close() {
         appender = null;
     }
 
-    /**
-     *
-     */
     @Override
     public synchronized void flush() {
+        // IDK why is empty
     }
 
-    /**
-     *
-     * @param val
-     */
     @Override
     public synchronized void write(int val) {
         oneByte[0] = (byte) val;
         write(oneByte, 0, 1);
     }
 
-    /**
-     *
-     * @param ba
-     */
     @Override
-    public synchronized void write(byte[] ba) {
+    public synchronized void write(byte @NotNull [] ba) {
         write(ba, 0, ba.length);
     }
 
-    /**
-     *
-     * @param ba
-     * @param str
-     * @param len
-     */
     @Override
-    public synchronized void write(byte[] ba, int str, int len) {
+    public synchronized void write(byte @NotNull [] ba, int str, int len) {
         if (appender != null) {
             appender.append(bytesToString(ba, str, len));
         }
     }
 
-    /**
-     *
-     * @param ba
-     * @param str
-     * @param len
-     * @return
-     */
-    static private String bytesToString(byte[] ba, int str, int len) {
-        try {
-            return new String(ba, str, len, "UTF-8");
-        } catch (UnsupportedEncodingException thr) {
-            return new String(ba, str, len);
-        } // all JVMs are required to support UTF-8
+    private static String bytesToString(byte[] ba, int str, int len) {
+        return new String(ba, str, len, StandardCharsets.UTF_8);
     }
 } /* END PUBLIC CLASS */

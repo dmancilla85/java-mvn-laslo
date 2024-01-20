@@ -16,20 +16,18 @@
  */
 package com.eljaguar.mvnlaslo.gui;
 
-import java.awt.EventQueue;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JTextArea;
 
-// *****************************************************************************
-
-// STATIC MEMBERS
-// *****************************************************************************
 /**
  *
  */
 class Appender implements Runnable {
+    private static final String EOL1 = "\n";
+    private static final String EOL2 = System.getProperty("line.separator", EOL1);
     private final JTextArea textArea;
     private final int maxLines; // maximum lines allowed in text area
     private final LinkedList<Integer> lengths; //length of lines within text area
@@ -38,14 +36,9 @@ class Appender implements Runnable {
     private boolean clear;
     private boolean queue;
 
-    /**
-     *
-     * @param txtara
-     * @param maxlin
-     */
-    Appender(JTextArea txtara, int maxlin) {
-        textArea = txtara;
-        maxLines = maxlin;
+    Appender(JTextArea textArea, int maxLine) {
+        this.textArea = textArea;
+        maxLines = maxLine;
         lengths = new LinkedList<>();
         values = new ArrayList<>();
         curLength = 0;
@@ -53,10 +46,6 @@ class Appender implements Runnable {
         queue = true;
     }
 
-    /**
-     *
-     * @param val
-     */
     synchronized void append(String val) {
         values.add(val);
         if (queue) {
@@ -87,7 +76,7 @@ class Appender implements Runnable {
         if (clear) {
             textArea.setText("");
         }
-        values.stream().map((val) -> {
+        values.stream().map(val -> {
             curLength += val.length();
             return val;
         }).map((java.lang.String val) -> {
@@ -99,14 +88,10 @@ class Appender implements Runnable {
                 curLength = 0;
             }
             return val;
-        }).forEachOrdered((val) -> {
-            textArea.append(val);
-        });
+        }).forEachOrdered(textArea::append);
         values.clear();
         clear = false;
         queue = true;
     }
-    private static final String EOL1 = "\n";
-    private static final String EOL2 = System.getProperty("line.separator", EOL1);
-    
+
 }

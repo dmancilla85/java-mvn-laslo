@@ -32,7 +32,7 @@ public enum ReturnValue {
      * 
      * @param returnCode 
      */
-    private ReturnValue(int returnCode) {
+    ReturnValue(int returnCode) {
         this.returnCode = returnCode;
     }
 

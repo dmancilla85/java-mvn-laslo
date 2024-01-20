@@ -16,7 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package com.eljaguar.mvnlaslo.gui;
-import javax.swing.JOptionPane;
+
+import javax.swing.*;
 
 /**
  *
@@ -24,12 +25,16 @@ import javax.swing.JOptionPane;
  */
 public class MessageBox {
 
+    private MessageBox(){
+        // do nothing
+    }
+
     /**
      * 
-     * @param infoMessage
-     * @param titleBar 
+     * @param infoMessage Message to show
+     * @param titleBar Title of the message box
      */
-    public static void show(String infoMessage, String titleBar) {
+    public static void showInformationBox(String infoMessage, String titleBar) {
         JOptionPane.showMessageDialog(null, infoMessage, "" + 
                 titleBar, JOptionPane.INFORMATION_MESSAGE);
     }

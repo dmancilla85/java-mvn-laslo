@@ -19,15 +19,14 @@ package com.eljaguar.mvnlaslo.gui;
 
 import com.eljaguar.mvnlaslo.core.LoopMatcher;
 import com.eljaguar.mvnlaslo.io.GenBank;
+import org.biojava.nbio.core.sequence.DNASequence;
+import javax.swing.*;
 import java.io.File;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JTextArea;
-import javax.swing.SwingWorker;
-import org.biojava.nbio.core.sequence.DNASequence;
+
+import static java.lang.System.out;
 
 /**
  *
@@ -37,26 +36,13 @@ class GUISwingWorker extends
         SwingWorker<Integer, Void> {
 
     private final GUIFrame frame;
-    private boolean ok;
-    private int progress;
 
-    /**
-     *
-     * @param textArea
-     * @param button
-     * @param loop
-     */
     public GUISwingWorker(GUIFrame frame) {
-        this.ok = true;
-        this.progress = 0;
         this.frame = frame;
     }
 
-    /**
-     *
-     */
     @Override
-    protected Integer doInBackground() throws Exception {
+    protected Integer doInBackground() {
 
         LinkedHashMap<String, DNASequence> dnaFile;
         String pathIn;
@@ -73,14 +59,14 @@ class GUISwingWorker extends
                 int i = 0;
 
                 for (String e : frame.getGeneList()) {
-                    List<String> lista = new ArrayList<>();
-                    lista.add(e);
-                    dnaFile = (LinkedHashMap<String, DNASequence>) GenBank.downLoadSequenceForId(lista);
+                    List<String> geneList = new ArrayList<>();
+                    geneList.add(e);
+                    dnaFile = (LinkedHashMap<String, DNASequence>) GenBank.downLoadSequenceForId(geneList);
 
-                    if (dnaFile != null) {
+                    if (!dnaFile.isEmpty()) {
                         // call the file as the first ncbi id
                         pathIn = GenBank.makeFile(frame.getPathOut(), dnaFile,
-                                lista.get(0).trim());
+                                geneList.get(0).trim());
                         
                         if (pathIn == null) {
                             out.println("Skipping this file...");
@@ -104,67 +90,25 @@ class GUISwingWorker extends
 
         }
 
-        this.setOk(lm.startReadingFiles());
+        lm.startReadingFiles();
         return 1;
     }
 
-    /**
-     *
-     */
     @Override
     protected void done() {
         out.flush();
-        MessageBox.show(frame.getCurrentBundle().getString("END_MSG"),
+        MessageBox.showInformationBox(frame.getCurrentBundle().getString("END_MSG"),
                 frame.getCurrentBundle().getString("END_TITLE"));
         frame.getProgressBar().setValue(100);
         frame.setIsRunning(false);
     }
 
     /**
-     * @return the button
-     */
-    public JButton getButton() {
-        return frame.getJBtnStart();
-    }
-
-    /**
-     * @return the loop
+     * @return the current process instance.
      */
     public LoopMatcher getLoop() {
         return frame.getLoopMatcher();
     }
 
-    /**
-     * @return the textArea
-     */
-    public JTextArea getTextArea() {
-        return frame.getTxtConsole();
-    }
-
-    /**
-     * @return the ok
-     */
-    public boolean isOk() {
-        return ok;
-    }
-
-    /**
-     * @param ok the ok to set
-     */
-    public void setOk(boolean ok) {
-        this.ok = ok;
-    }
-
-    public void setTaskProgress(int progress) {
-        if (progress < 0) {
-            this.progress = 0;
-        } else {
-            this.progress = progress;
-        }
-    }
-
-    public int getTaskProgress() {
-        return this.progress;
-    }
 
 }

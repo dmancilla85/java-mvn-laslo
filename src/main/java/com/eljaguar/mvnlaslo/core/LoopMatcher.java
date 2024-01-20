@@ -20,38 +20,26 @@ package com.eljaguar.mvnlaslo.core;
 import com.eljaguar.mvnlaslo.io.FASTACorrector;
 import com.eljaguar.mvnlaslo.io.InputSequence;
 import com.eljaguar.mvnlaslo.io.SourceFile;
-import static com.eljaguar.mvnlaslo.io.SourceFile.CSV_EXT;
-import static com.eljaguar.mvnlaslo.io.SourceFile.FASTA_EXT;
-import static com.eljaguar.mvnlaslo.io.SourceFile.FASTA_EXT_2;
-import static com.eljaguar.mvnlaslo.io.SourceFile.GENBANK_EXT;
-import static com.eljaguar.mvnlaslo.io.SourceFile.VIENNA_EXT;
 import com.eljaguar.mvnlaslo.io.Vienna;
 import com.eljaguar.mvnlaslo.tools.RNAFoldConfiguration;
 import com.eljaguar.mvnlaslo.tools.UShuffle;
 import com.opencsv.CSVWriter;
+import org.biojava.nbio.core.sequence.DNASequence;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import static java.lang.Math.round;
-import static java.lang.System.err;
-import static java.lang.System.out;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.swing.JProgressBar;
-import org.biojava.nbio.core.sequence.DNASequence;
+
+import static com.eljaguar.mvnlaslo.io.SourceFile.*;
+import static java.lang.Math.round;
+import static java.lang.System.err;
+import static java.lang.System.out;
 import static org.biojava.nbio.core.sequence.io.FastaReaderHelper.readFastaDNASequence;
 import static org.biojava.nbio.core.sequence.io.GenbankReaderHelper.readGenbankDNASequence;
 
@@ -67,7 +55,7 @@ public class LoopMatcher {
     private InputSequence inputType;
     private int minLength;
     private int maxLength;
-    private int maxWooble;
+    private int maxWobble;
     private ResourceBundle bundle;
     private int maxMismatch;
     private File[] fileList;
@@ -92,24 +80,24 @@ public class LoopMatcher {
      * @param inputType
      * @param minLength
      * @param maxLength
-     * @param maxWooble
+     * @param maxWobble
      * @param maxMismatch
      * @param locale
      * @param kLetRandoms
      * @param searchReverse
      */
     public LoopMatcher(String pathOut, String pathIn,
-            List<String> loopPatterns, String additionalSequence,
-            InputSequence inputType, int minLength, int maxLength,
-            int maxWooble, int maxMismatch, Locale locale,
-            int kLetRandoms, boolean searchReverse) {
+                       List<String> loopPatterns, String additionalSequence,
+                       InputSequence inputType, int minLength, int maxLength,
+                       int maxWobble, int maxMismatch, Locale locale,
+                       int kLetRandoms, boolean searchReverse) {
         this.pathOut = pathOut;
         this.pathIn = pathIn;
         this.loopPatterns = (ArrayList<String>) loopPatterns;
         this.inputType = inputType;
         this.minLength = minLength;
         this.maxLength = maxLength;
-        this.maxWooble = maxWooble;
+        this.maxWobble = maxWobble;
         this.maxMismatch = maxMismatch;
         this.fileList = null;
         this.extendedMode = false;
@@ -188,7 +176,7 @@ public class LoopMatcher {
      *
      * @return
      */
-    public int getkLetRandoms() {
+    public int getKLetRandoms() {
         return kLetRandoms;
     }
 
@@ -212,7 +200,7 @@ public class LoopMatcher {
      *
      * @param kLetRandoms
      */
-    public void setkLetRandoms(int kLetRandoms) {
+    public void setKLetRandoms(int kLetRandoms) {
         this.kLetRandoms = kLetRandoms;
     }
 
@@ -387,16 +375,16 @@ public class LoopMatcher {
      *
      * @return
      */
-    public int getMaxWooble() {
-        return maxWooble;
+    public int getMaxWobble() {
+        return maxWobble;
     }
 
     /**
      *
-     * @param maxWooble
+     * @param maxWobble
      */
-    public void setMaxWooble(int maxWooble) {
-        this.maxWooble = maxWooble;
+    public void setMaxWobble(int maxWobble) {
+        this.maxWobble = maxWobble;
     }
 
     /**
@@ -413,51 +401,6 @@ public class LoopMatcher {
      */
     public void setMaxMismatch(int maxMismatch) {
         this.maxMismatch = maxMismatch;
-    }
-
-    /**
-     *
-     * @param sFileName d
-     * @param stemResearch ed
-     * @param headerList d
-     */
-    public void writeCSV(String sFileName,
-            List<StemLoop> stemResearch, String headerList) {
-
-        CSVWriter writer;
-
-        if (stemResearch.isEmpty() && headerList == null) {
-            return;
-        }
-
-        try {
-            writer = new CSVWriter(new FileWriter(sFileName), ';',
-                    CSVWriter.DEFAULT_QUOTE_CHARACTER,
-                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-                    CSVWriter.DEFAULT_LINE_END);
-
-            if (headerList != null) {
-                String[] header;
-                header = headerList.split(";"); //NOI18N
-                writer.writeNext(header);
-            }
-
-            stemResearch.stream().map((stemResearch1) -> {
-                String[] data;
-                data = stemResearch1.toRowCSV().split(";");
-                return data;
-            }).forEachOrdered((data) -> {
-                writer.writeNext(data);
-            });
-
-            writer.close();
-
-        } catch (IOException e) {
-            out.println(java.text.MessageFormat.format(
-                    getBundle()
-                            .getString("ERROR_EX"), new Object[]{e.getMessage()}));
-            out.println("*Method: writeCSV*");
-        }
     }
 
     /**
@@ -485,7 +428,7 @@ public class LoopMatcher {
         ini = Calendar.getInstance();
         out.println(java.text.MessageFormat.format(getBundle()
                 .getString("START_TIME"),
-                new Object[]{Calendar.getInstance().getTime()}));
+                Calendar.getInstance().getTime()));
         out.flush();
 
         if (getFileList() == null) {
@@ -505,8 +448,7 @@ public class LoopMatcher {
 
                     try {
                         if (currentFile.toString().endsWith(GENBANK_EXT)) {
-                            dnaFile
-                                    = readGenbankDNASequence(currentFile, false);
+                            dnaFile = readGenbankDNASequence(currentFile, false);
                             isGenBank = true;
                         } else {
                             dnaFile = readFastaDNASequence(currentFile, false);
@@ -515,19 +457,19 @@ public class LoopMatcher {
                     } catch (IOException ex) {
                         out.println(java.text.MessageFormat.format(
                                 getBundle().getString("ERROR_EX"),
-                                new Object[]{ex.getMessage()}));
+                                ex.getMessage()));
                         out.println("*Method: startReadingFiles*");
                     } catch (Exception ex) {
                         out.println(java.text.MessageFormat.format(
                                 getBundle().getString("ERROR_EX"),
-                                new Object[]{ex.getMessage()}));
+                                ex.getMessage()));
                         out.println("*Method: startReadingFiles*");
                     }
 
                     if (dnaFile != null && dnaFile.size() > 0) {
                         UShuffle.makeShuffleSequences(getPathOut(),
                                 currentFile.getName(), dnaFile, getNumberOfRandoms(),
-                                getkLetRandoms(), isGenBank);
+                                getKLetRandoms(), isGenBank);
                     }
                 }
             }
@@ -563,8 +505,8 @@ public class LoopMatcher {
         fin = Calendar.getInstance();
         out.print(java.text.MessageFormat.format(getBundle()
                 .getString("TOTAL_TIME"),
-                new Object[]{((fin.getTimeInMillis()
-                    - ini.getTimeInMillis()) / 1000)}));
+                ((fin.getTimeInMillis()
+                    - ini.getTimeInMillis()) / 1000)));
 
         out.flush();
 
@@ -576,7 +518,6 @@ public class LoopMatcher {
     /**
      * Process the files selected.
      */
-    @SuppressWarnings({"ValueOfIncrementOrDecrementUsed", "empty-statement"})
     public void callProcessThreads() {
 
         CSVWriter writer;
@@ -604,7 +545,7 @@ public class LoopMatcher {
         try {
             fileName = getActualFile().getName();
             out.print(java.text.MessageFormat.format(getBundle()
-                    .getString("FILE_PRINT"), new Object[]{fileName}));
+                    .getString("FILE_PRINT"), fileName));
             out.flush();
             fileName = fileName.replaceFirst("[.][^.]+$", "");
             fileOut = this.getPathOut() + "\\" + fileName + "."
@@ -764,12 +705,12 @@ public class LoopMatcher {
             out.println(getBundle().getString("CANT_OPEN_FILE"));
             out.println(java.text.MessageFormat.format(
                     getBundle()
-                            .getString("ERROR_EX"), new Object[]{ex.getMessage()}));
+                            .getString("ERROR_EX"), ex.getMessage()));
             out.println("*Method: callProcessThreads*");
         } catch (Exception ex) {
             out.println(java.text.MessageFormat.format(
                     getBundle()
-                            .getString("ERROR_EX"), new Object[]{ex.getMessage()}));
+                            .getString("ERROR_EX"), ex.getMessage()));
             out.println("*Method: callProcessThreads*");
         }
     }

@@ -30,6 +30,12 @@
             <artifactId>commons-io</artifactId>
             <version>1.3.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <name>LoopMatcher (LAZLO)</name>
     
@@ -55,6 +61,8 @@
             <configuration>
                <debug>true</debug>
                <showDeprecation>true</showDeprecation>
+                <source>11</source>
+                <target>11</target>
             </configuration>
          </plugin>
       </plugins>
