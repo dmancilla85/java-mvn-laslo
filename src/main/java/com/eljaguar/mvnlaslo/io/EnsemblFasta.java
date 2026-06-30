@@ -23,12 +23,10 @@ package com.eljaguar.mvnlaslo.io;
  */
 public class EnsemblFasta extends SourceFile {
 
-    private String GENE = "gene:";
     private static String GENE_BIOTYPE = "gene_biotype:";
     private static String TRANSCRIPT_BIOTYPE = "transcript_biotype:";
     private static String GENE_SYMBOL = "gene_symbol:";
     private static String DESCRIPTION = "description:";
-
     private static String HEADER = "GeneID" + ROW_DELIMITER
             + "GeneSymbol" + ROW_DELIMITER
             + "GeneBioType" + ROW_DELIMITER
@@ -36,7 +34,7 @@ public class EnsemblFasta extends SourceFile {
             + "TranscriptBiotype" + ROW_DELIMITER
             + "#Splice" + ROW_DELIMITER
             + "Description" + ROW_DELIMITER;
-
+    private String GENE = "gene:";
     private String geneBiotype;
     private String transcriptBiotype;
     private String description;
@@ -54,6 +52,84 @@ public class EnsemblFasta extends SourceFile {
         this.description = ""; //$NON-NLS-1$
         this.spliceNumber = ""; //$NON-NLS-1$
 
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static String getHeader() {
+        return EnsemblFasta.getHEADER();
+    }
+
+    /**
+     * @return the DESCRIPTION
+     */
+    public static String getDESCRIPTION() {
+        return DESCRIPTION;
+    }
+
+    /**
+     * @param aDESCRIPTION the DESCRIPTION to set
+     */
+    public static void setDESCRIPTION(String aDESCRIPTION) {
+        DESCRIPTION = aDESCRIPTION;
+    }
+
+    /**
+     * @return the GENE_BIOTYPE
+     */
+    public static String getGENE_BIOTYPE() {
+        return GENE_BIOTYPE;
+    }
+
+    /**
+     * @param aGENE_BIOTYPE the GENE_BIOTYPE to set
+     */
+    public static void setGENE_BIOTYPE(String aGENE_BIOTYPE) {
+        GENE_BIOTYPE = aGENE_BIOTYPE;
+    }
+
+    /**
+     * @return the GENE_SYMBOL
+     */
+    public static String getGENE_SYMBOL() {
+        return GENE_SYMBOL;
+    }
+
+    /**
+     * @param aGENE_SYMBOL the GENE_SYMBOL to set
+     */
+    public static void setGENE_SYMBOL(String aGENE_SYMBOL) {
+        GENE_SYMBOL = aGENE_SYMBOL;
+    }
+
+    /**
+     * @return the HEADER
+     */
+    public static String getHEADER() {
+        return HEADER;
+    }
+
+    /**
+     * @param aHEADER the HEADER to set
+     */
+    public static void setHEADER(String aHEADER) {
+        HEADER = aHEADER;
+    }
+
+    /**
+     * @return the TRANSCRIPT_BIOTYPE
+     */
+    public static String getTRANSCRIPT_BIOTYPE() {
+        return TRANSCRIPT_BIOTYPE;
+    }
+
+    /**
+     * @param aTRANSCRIPT_BIOTYPE the TRANSCRIPT_BIOTYPE to set
+     */
+    public static void setTRANSCRIPT_BIOTYPE(String aTRANSCRIPT_BIOTYPE) {
+        TRANSCRIPT_BIOTYPE = aTRANSCRIPT_BIOTYPE;
     }
 
     /**
@@ -199,14 +275,6 @@ public class EnsemblFasta extends SourceFile {
     }
 
     /**
-     *
-     * @return
-     */
-    public static String getHeader() {
-        return EnsemblFasta.getHEADER();
-    }
-
-    /**
      * @return the GENE
      */
     public String getGENE() {
@@ -218,76 +286,6 @@ public class EnsemblFasta extends SourceFile {
      */
     public void setGENE(String GENE) {
         this.GENE = GENE;
-    }
-
-    /**
-     * @return the DESCRIPTION
-     */
-    public static String getDESCRIPTION() {
-        return DESCRIPTION;
-    }
-
-    /**
-     * @return the GENE_BIOTYPE
-     */
-    public static String getGENE_BIOTYPE() {
-        return GENE_BIOTYPE;
-    }
-
-    /**
-     * @return the GENE_SYMBOL
-     */
-    public static String getGENE_SYMBOL() {
-        return GENE_SYMBOL;
-    }
-
-    /**
-     * @return the HEADER
-     */
-    public static String getHEADER() {
-        return HEADER;
-    }
-
-    /**
-     * @return the TRANSCRIPT_BIOTYPE
-     */
-    public static String getTRANSCRIPT_BIOTYPE() {
-        return TRANSCRIPT_BIOTYPE;
-    }
-
-    /**
-     * @param aDESCRIPTION the DESCRIPTION to set
-     */
-    public static void setDESCRIPTION(String aDESCRIPTION) {
-        DESCRIPTION = aDESCRIPTION;
-    }
-
-    /**
-     * @param aGENE_BIOTYPE the GENE_BIOTYPE to set
-     */
-    public static void setGENE_BIOTYPE(String aGENE_BIOTYPE) {
-        GENE_BIOTYPE = aGENE_BIOTYPE;
-    }
-
-    /**
-     * @param aGENE_SYMBOL the GENE_SYMBOL to set
-     */
-    public static void setGENE_SYMBOL(String aGENE_SYMBOL) {
-        GENE_SYMBOL = aGENE_SYMBOL;
-    }
-
-    /**
-     * @param aHEADER the HEADER to set
-     */
-    public static void setHEADER(String aHEADER) {
-        HEADER = aHEADER;
-    }
-
-    /**
-     * @param aTRANSCRIPT_BIOTYPE the TRANSCRIPT_BIOTYPE to set
-     */
-    public static void setTRANSCRIPT_BIOTYPE(String aTRANSCRIPT_BIOTYPE) {
-        TRANSCRIPT_BIOTYPE = aTRANSCRIPT_BIOTYPE;
     }
 
     /**

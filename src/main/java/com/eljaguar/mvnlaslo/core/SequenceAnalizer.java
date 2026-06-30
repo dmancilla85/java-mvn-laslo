@@ -42,17 +42,17 @@ public class SequenceAnalizer {
     private static ResourceBundle bundle;
 
     /**
-     * @param newBundle
-     */
-    public static void setBundle(ResourceBundle newBundle) {
-        bundle = newBundle;
-    }
-
-    /**
      * @return current bundle
      */
     public static ResourceBundle getBundle() {
         return bundle;
+    }
+
+    /**
+     * @param newBundle
+     */
+    public static void setBundle(ResourceBundle newBundle) {
+        bundle = newBundle;
     }
 
     public static String isBasicHairpin(int minLength, int loopLength, int loopPos, String seq) {

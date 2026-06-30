@@ -35,13 +35,14 @@ public class FASTACorrector {
 
     protected final static String HEADER_START = ">";
     protected final static String BLANK = " ";
-    protected final static String NEW_LINE = System.getProperty("line.separator");
+    protected final static String NEW_LINE = System.lineSeparator();
     protected final static String HEADER_DESC = "Sequence ID";
 
     /**
      * Format bad FASTA files.
+     *
      * @param fileName
-     * @return 
+     * @return
      */
     @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
     public static boolean formatFile(String fileName) {

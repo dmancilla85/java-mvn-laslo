@@ -31,9 +31,9 @@ import static java.lang.System.out;
  */
 public class RNAFoldInterface {
 
-    private static final String COMMAND_RNAFOLD = "./ext/RNAFold.exe";
     //private final static String RNAFold_ARGS = " -d2 --noLP --noPS";
     public static final int DEFAULT_TEMPERATURE = 37;
+    private static final String COMMAND_RNAFOLD = "./ext/RNAFold.exe";
     private String structure;
     private double mfe;
     private int temperature;
@@ -71,7 +71,7 @@ public class RNAFoldInterface {
      * @param avoidLonelyPairs
      */
     public RNAFoldInterface(String sequence, int temperature, boolean avoidLonelyPairs) {
-        String command = COMMAND_RNAFOLD; 
+        String command = COMMAND_RNAFOLD;
 
         InputStreamReader isr;
         Process child;
@@ -134,6 +134,23 @@ public class RNAFoldInterface {
      */
     public RNAFoldInterface(String sequence) {
         this(sequence, RNAFoldConfiguration.DEFAULT_TEMP, true);
+    }
+
+    /**
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+
+        String sequence = "UAGAGAUCUCUAUGUAUUUCCC";
+        RNAFoldInterface test;
+        try {
+            test = new RNAFoldInterface(sequence);
+            out.println(test);
+        } catch (Exception ex) {
+            Logger.getLogger(RNAFoldInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     /**
@@ -210,23 +227,6 @@ public class RNAFoldInterface {
      */
     public void setMfe(float mfe) {
         this.mfe = mfe;
-    }
-
-    /**
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-
-        String sequence = "UAGAGAUCUCUAUGUAUUUCCC";
-        RNAFoldInterface test;
-        try {
-            test = new RNAFoldInterface(sequence);
-            out.println(test);
-        } catch (Exception ex) {
-            Logger.getLogger(RNAFoldInterface.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
     }
 
 }

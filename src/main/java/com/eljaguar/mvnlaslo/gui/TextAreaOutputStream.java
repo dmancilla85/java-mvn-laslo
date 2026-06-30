@@ -39,12 +39,16 @@ public class TextAreaOutputStream
 
     public TextAreaOutputStream(JTextArea textArea, int maxLine) {
         if (maxLine < 1) {
-            throw new 
-        IllegalArgumentException("TextAreaOutputStream maximum lines must be " +
-                "positive (value=" + maxLine + ")");
+            throw new
+                    IllegalArgumentException("TextAreaOutputStream maximum lines must be " +
+                    "positive (value=" + maxLine + ")");
         }
         oneByte = new byte[1];
         appender = new Appender(textArea, maxLine);
+    }
+
+    private static String bytesToString(byte[] ba, int str, int len) {
+        return new String(ba, str, len, StandardCharsets.UTF_8);
     }
 
     /**
@@ -82,9 +86,5 @@ public class TextAreaOutputStream
         if (appender != null) {
             appender.append(bytesToString(ba, str, len));
         }
-    }
-
-    private static String bytesToString(byte[] ba, int str, int len) {
-        return new String(ba, str, len, StandardCharsets.UTF_8);
     }
 } /* END PUBLIC CLASS */

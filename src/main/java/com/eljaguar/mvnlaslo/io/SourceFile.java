@@ -94,6 +94,14 @@ public class SourceFile {
      *
      * @return
      */
+    public static String getHeader() {
+        return "NO HEADER";
+    }
+
+    /**
+     *
+     * @return
+     */
     public String getTranscriptID() {
         return transcriptID;
     }
@@ -168,14 +176,6 @@ public class SourceFile {
      */
     public void setFieldDelimiter(String fieldDelimiter) {
         this.fieldDelimiter = fieldDelimiter;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static String getHeader() {
-        return "NO HEADER";
     }
 
     /**

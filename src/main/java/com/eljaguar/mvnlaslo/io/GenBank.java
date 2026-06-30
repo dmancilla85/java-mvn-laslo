@@ -39,15 +39,8 @@ import static java.lang.System.out;
  */
 public class GenBank extends SourceFile {
 
-    private String description;
-    private int cdsStart;
-    private int cdsEnd;
-    private String location;
-    private String synonym;
-    private String proxyConf;
-    private static String proxyFileName = "proxy";
     private static final String E_FETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?";
-
+    private static String proxyFileName = "proxy";
     private static String HEADER
             = "Gen" + ROW_DELIMITER
             + "GeneSynonym" + ROW_DELIMITER
@@ -56,6 +49,12 @@ public class GenBank extends SourceFile {
             + "CDS_Start" + ROW_DELIMITER
             + "CDS_End" + ROW_DELIMITER
             + "Location" + ROW_DELIMITER;
+    private String description;
+    private int cdsStart;
+    private int cdsEnd;
+    private String location;
+    private String synonym;
+    private String proxyConf;
 
     /**
      * Blank constructor.
@@ -75,7 +74,7 @@ public class GenBank extends SourceFile {
      * @param cdsEnd
      */
     public GenBank(String synonym, String description, int cdsStart,
-            int cdsEnd) {
+                   int cdsEnd) {
         this.description = description;
         this.cdsStart = cdsStart;
         this.cdsEnd = cdsEnd;
@@ -92,7 +91,7 @@ public class GenBank extends SourceFile {
      * @return Path of the new file
      */
     public static String makeFile(String path,
-            Map<String, DNASequence> dnaFile, String name) {
+                                  Map<String, DNASequence> dnaFile, String name) {
         String absolutePath = path + "\\" + name + ".gb";
         File file = new File(absolutePath);
 
@@ -187,7 +186,7 @@ public class GenBank extends SourceFile {
      * @return
      */
     public static boolean connectToProxy(String host, String port, String user,
-            String password) {
+                                         String password) {
 
         try {
             // defined a proxy connection
@@ -210,55 +209,46 @@ public class GenBank extends SourceFile {
      */
     @SuppressWarnings("SleepWhileInLoop")
     public static Map<String, DNASequence>
-            downLoadSequenceForId(List<String> genBankId) throws Exception {
+    downLoadSequenceForId(List<String> genBankId) throws Exception {
 
         LinkedHashMap<String, DNASequence> dnaFile;
-        LinkedHashMap<String, DNASequence> tmp = null;
+        Map<String, DNASequence> tmp = null;
         String request;
         URL ncbiGenbank;
 
         dnaFile = new LinkedHashMap<>();
 
-        for (String transcriptoId : genBankId) {
+        for (String transcriptId : genBankId) {
             try {
                 request = String.format("db=nuccore&id=%s&rettype=gb&retmode=text",
-                        transcriptoId.trim());
+                        transcriptId.trim());
 
                 // Request to NCBI e-fetch
                 ncbiGenbank = new URL(E_FETCH + request);
                 tmp = GenbankReaderHelper.readGenbankDNASequence(
                         ncbiGenbank.openStream());
-                out.print(transcriptoId.trim() + "... ");
+                out.print(transcriptId.trim() + "... ");
             } catch (CompoundNotFoundException ex) {
                 out.println("ERROR: Compound Not Found Exception. Cause: "
-                        + (ex.getCause()!=null?ex.getCause().getMessage():ex.getLocalizedMessage()));
+                        + (ex.getCause() != null ? ex.getCause().getMessage() : ex.getLocalizedMessage()));
                 //return null;
 
             } catch (MalformedURLException ex) {
                 out.println("ERROR: Malformed URL Exception. Cause: "
                         + ex.getCause().getMessage());
                 //return null;
-            } catch (IOException ex) {
-
-                if (ex.getLocalizedMessage().contains("400")) {
-                    out.println("ERROR: " + transcriptoId + " code not found.");
-                } else {
-                    out.println("ERROR: IO Exception (" + transcriptoId
-                            + "). " + ex.getMessage());
-                }
-                //return null;
             } catch (Exception ex) {
 
                 if (ex.getLocalizedMessage().contains("400")) {
-                    out.println("ERROR: " + transcriptoId + " code not found.");
+                    out.println("ERROR: " + transcriptId + " code not found.");
                 } else {
-                    out.println("ERROR: IO Exception (" + transcriptoId
+                    out.println("ERROR: IO Exception (" + transcriptId
                             + "). " + ex.getMessage());
                 }
                 //return null;
             }
 
-            if (tmp != null && tmp.size() > 0) {
+            if (tmp != null && !tmp.isEmpty()) {
                 dnaFile.putAll(tmp);
             }
             Thread.sleep(350);
@@ -279,6 +269,42 @@ public class GenBank extends SourceFile {
         } catch (Exception ex) {
             Logger.getLogger(GenBank.class.getName()).log(Level.SEVERE, null, ex);
         }*/
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static String getHeader() {
+        return GenBank.getHEADER();
+    }
+
+    /**
+     * @return the HEADER
+     */
+    public static String getHEADER() {
+        return HEADER;
+    }
+
+    /**
+     * @param aHEADER the HEADER to set
+     */
+    public static void setHEADER(String aHEADER) {
+        HEADER = aHEADER;
+    }
+
+    /**
+     * @return the proxyFileName
+     */
+    public static String getPROXY_FILE() {
+        return proxyFileName;
+    }
+
+    /**
+     * @param aPROXY_FILE the proxyFileName to set
+     */
+    public static void setPROXY_FILE(String aPROXY_FILE) {
+        proxyFileName = aPROXY_FILE;
     }
 
     /**
@@ -338,6 +364,13 @@ public class GenBank extends SourceFile {
     }
 
     /**
+     * @param location the location to set
+     */
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    /**
      *
      * @return
      */
@@ -346,11 +379,25 @@ public class GenBank extends SourceFile {
     }
 
     /**
+     * @param cdsStart the cdsStart to set
+     */
+    public void setCdsStart(int cdsStart) {
+        this.cdsStart = cdsStart;
+    }
+
+    /**
      *
      * @return
      */
     public int getCdsEnd() {
         return cdsEnd;
+    }
+
+    /**
+     * @param cdsEnd the cdsEnd to set
+     */
+    public void setCdsEnd(int cdsEnd) {
+        this.cdsEnd = cdsEnd;
     }
 
     /**
@@ -369,14 +416,6 @@ public class GenBank extends SourceFile {
             this.setCdsStart(Integer.parseInt(parts[0]));
             this.setCdsEnd(Integer.parseInt(parts[1]));
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static String getHeader() {
-        return GenBank.getHEADER();
     }
 
     /**
@@ -402,58 +441,9 @@ public class GenBank extends SourceFile {
     }
 
     /**
-     * @param cdsEnd the cdsEnd to set
-     */
-    public void setCdsEnd(int cdsEnd) {
-        this.cdsEnd = cdsEnd;
-    }
-
-    /**
-     * @param cdsStart the cdsStart to set
-     */
-    public void setCdsStart(int cdsStart) {
-        this.cdsStart = cdsStart;
-    }
-
-    /**
-     * @param location the location to set
-     */
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    /**
      * @param proxyConf the proxyConf to set
      */
     public void setProxyConf(String proxyConf) {
         this.proxyConf = proxyConf;
-    }
-
-    /**
-     * @return the HEADER
-     */
-    public static String getHEADER() {
-        return HEADER;
-    }
-
-    /**
-     * @return the proxyFileName
-     */
-    public static String getPROXY_FILE() {
-        return proxyFileName;
-    }
-
-    /**
-     * @param aHEADER the HEADER to set
-     */
-    public static void setHEADER(String aHEADER) {
-        HEADER = aHEADER;
-    }
-
-    /**
-     * @param aPROXY_FILE the proxyFileName to set
-     */
-    public static void setPROXY_FILE(String aPROXY_FILE) {
-        proxyFileName = aPROXY_FILE;
     }
 }

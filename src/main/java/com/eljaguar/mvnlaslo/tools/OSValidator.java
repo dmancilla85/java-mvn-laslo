@@ -95,7 +95,7 @@ public class OSValidator {
     }
 
     /**
-     * @return
+     * @return Number of CPU cores detected in machine
      */
     @SuppressWarnings({"null", "NestedAssignment"})
     public static int getNumberOfCPUCores() {
@@ -125,6 +125,7 @@ public class OSValidator {
         }
 
         BufferedReader reader;
+        assert process != null;
         reader = new BufferedReader(
                 new InputStreamReader(process.getInputStream()));
         String line;
@@ -132,7 +133,7 @@ public class OSValidator {
         try {
             while ((line = reader.readLine()) != null) {
                 if (OSValidator.isMac()) {
-                    numberOfCores = line.length() > 0
+                    numberOfCores = !line.isEmpty()
                             ? Integer.parseInt(line) : 0;
                 } else if (OSValidator.isUnix()) {
                     if (line.contains("Core(s) per socket:")) {

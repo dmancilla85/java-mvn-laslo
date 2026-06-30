@@ -132,18 +132,18 @@ public class LoopMatcher {
 
     /**
      *
-     * @param bar
-     */
-    public void setProgressBar(JProgressBar bar) {
-        this.jpBar = bar;
-    }
-
-    /**
-     *
      * @param extendedMode
      */
     public void setExtendedMode(boolean extendedMode) {
         this.extendedMode = extendedMode;
+    }
+
+    /**
+     *
+     * @param bar
+     */
+    public void setProgressBar(JProgressBar bar) {
+        this.jpBar = bar;
     }
 
     /**
@@ -182,10 +182,10 @@ public class LoopMatcher {
 
     /**
      *
-     * @param avoidLonelyPairs
+     * @param kLetRandoms
      */
-    public void setAvoidLonelyPairs(boolean avoidLonelyPairs) {
-        this.avoidLonelyPairs = avoidLonelyPairs;
+    public void setKLetRandoms(int kLetRandoms) {
+        this.kLetRandoms = kLetRandoms;
     }
 
     /**
@@ -198,10 +198,10 @@ public class LoopMatcher {
 
     /**
      *
-     * @param kLetRandoms
+     * @param avoidLonelyPairs
      */
-    public void setKLetRandoms(int kLetRandoms) {
-        this.kLetRandoms = kLetRandoms;
+    public void setAvoidLonelyPairs(boolean avoidLonelyPairs) {
+        this.avoidLonelyPairs = avoidLonelyPairs;
     }
 
     /**
@@ -232,11 +232,11 @@ public class LoopMatcher {
     }
 
     /**
-     *
-     * @param mode
+     * @param fileList the fileList to set
      */
-    public void setIsExtendedMode(boolean mode) {
-        this.setExtendedMode(mode);
+    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
+    public void setFileList(File[] fileList) {
+        this.fileList = fileList;
     }
 
     /**
@@ -245,6 +245,14 @@ public class LoopMatcher {
      */
     public boolean getIsExtendedMode() {
         return this.isExtendedMode();
+    }
+
+    /**
+     *
+     * @param mode
+     */
+    public void setIsExtendedMode(boolean mode) {
+        this.setExtendedMode(mode);
     }
 
     /**
@@ -313,14 +321,6 @@ public class LoopMatcher {
         }
 
         StemLoop.setMaxPatternLength(maxWord);
-    }
-
-    /**
-     *
-     * @param bundle
-     */
-    public void setBundle(ResourceBundle bundle) {
-        this.bundle = bundle;
     }
 
     /**
@@ -427,7 +427,7 @@ public class LoopMatcher {
         boolean isGenBank = false;
         ini = Calendar.getInstance();
         out.println(java.text.MessageFormat.format(getBundle()
-                .getString("START_TIME"),
+                        .getString("START_TIME"),
                 Calendar.getInstance().getTime()));
         out.flush();
 
@@ -504,9 +504,9 @@ public class LoopMatcher {
 
         fin = Calendar.getInstance();
         out.print(java.text.MessageFormat.format(getBundle()
-                .getString("TOTAL_TIME"),
+                        .getString("TOTAL_TIME"),
                 ((fin.getTimeInMillis()
-                    - ini.getTimeInMillis()) / 1000)));
+                        - ini.getTimeInMillis()) / 1000)));
 
         out.flush();
 
@@ -658,7 +658,7 @@ public class LoopMatcher {
                     }
 
                     // wait for pool ending
-                    while (!pool.isTerminated());
+                    while (!pool.isTerminated()) ;
 
                     if (nHilos > 0) {
                         pool = Executors.newFixedThreadPool(nHilos);
@@ -690,7 +690,7 @@ public class LoopMatcher {
                 pool.shutdown();
             }
 
-            while (!pool.isTerminated());
+            while (!pool.isTerminated()) ;
 
             writer.close();
             fasta.clear();
@@ -755,13 +755,6 @@ public class LoopMatcher {
     }
 
     /**
-     * @return the bundle
-     */
-    public ResourceBundle getBundle() {
-        return bundle;
-    }
-
-    /**
      * @param actualFile the actualFile to set
      */
     public void setActualFile(File actualFile) {
@@ -769,11 +762,18 @@ public class LoopMatcher {
     }
 
     /**
-     * @param fileList the fileList to set
+     * @return the bundle
      */
-    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-    public void setFileList(File[] fileList) {
-        this.fileList = fileList;
+    public ResourceBundle getBundle() {
+        return bundle;
+    }
+
+    /**
+     *
+     * @param bundle
+     */
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
     }
 
     public double getTemperature() {

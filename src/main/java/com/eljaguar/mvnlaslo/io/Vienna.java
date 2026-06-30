@@ -23,17 +23,27 @@ public class Vienna extends SourceFile {
     private String brackets;
     private double mfe;
 
-    public Vienna(){
-        
+    public Vienna() {
+
     }
-    
+
     public Vienna(File viennaFile) {
         this.sequence = "";
         this.brackets = "";
         this.mfe = 0.0;
-        
-        readViennaFile(viennaFile);
 
+        if(viennaFile != null) {
+            readViennaFile(viennaFile);
+        }
+    }
+
+    public static void test(String filePath) {
+        System.out.println();
+        Vienna vienna = new Vienna(null);
+        // Method #2 - Read file with a filter
+        vienna.readViennaFile(new File(filePath));
+
+        System.out.println(vienna);
     }
 
     @Override
@@ -49,24 +59,17 @@ public class Vienna extends SourceFile {
     }
 
     /**
-     * @return the mfe
-     */
-    public double getMfe() {
-        return mfe;
-    }
-
-    /**
-     * @return the sequence
-     */
-    public String getSequence() {
-        return sequence;
-    }
-
-    /**
      * @param brackets the brackets to set
      */
     public void setBrackets(String brackets) {
         this.brackets = brackets;
+    }
+
+    /**
+     * @return the mfe
+     */
+    public double getMfe() {
+        return mfe;
     }
 
     /**
@@ -77,6 +80,13 @@ public class Vienna extends SourceFile {
     }
 
     /**
+     * @return the sequence
+     */
+    public String getSequence() {
+        return sequence;
+    }
+
+    /**
      * @param sequence the sequence to set
      */
     public void setSequence(String sequence) {
@@ -84,10 +94,10 @@ public class Vienna extends SourceFile {
     }
 
     @Override
-    public String toRowCSV(){
+    public String toRowCSV() {
         return "";
     }
-    
+
     private boolean readViennaFile(File file) {
 
         Object[] aux;
@@ -103,9 +113,9 @@ public class Vienna extends SourceFile {
             this.sequence = aux[0].toString();
             this.brackets = aux[1].toString().split("\t")[0];
             this.mfe = Double.parseDouble(aux[1]
-              .toString().split("\t")[1]
-              .replace("(", "")
-              .replace(")", ""));
+                    .toString().split("\t")[1]
+                    .replace("(", "")
+                    .replace(")", ""));
 
         } catch (IOException io) {
             out.println("Error: " + io.getMessage());
@@ -113,15 +123,6 @@ public class Vienna extends SourceFile {
         }
 
         return true;
-    }
-
-    public static void test(String filePath) {
-        System.out.println();
-        Vienna vienna = new Vienna(null);
-        // Method #2 - Read file with a filter
-        vienna.readViennaFile(new File(filePath));
-
-        System.out.println(vienna);
     }
 
 }

@@ -56,17 +56,17 @@ public class BaseVariable {
     }
 
     /**
-     * @return the position
-     */
-    public final Integer getPosition() {
-        return position;
-    }
-
-    /**
      * @param base the base to set
      */
     public final void setBase(final Character base) {
         this.base = base;
+    }
+
+    /**
+     * @return the position
+     */
+    public final Integer getPosition() {
+        return position;
     }
 
     /**
@@ -77,21 +77,21 @@ public class BaseVariable {
     }
 
     /**
+     * @return valor
+     */
+    public final Character getValue() {
+        return this.value;
+    }
+
+    /**
      *
      * @param pvalue sdf
      */
     public final void setValue(final Character pvalue) {
         if (pvalue == 'A' || pvalue == 'C' || pvalue == 'T'
-          || pvalue == 'U' || pvalue == 'G') {
+                || pvalue == 'U' || pvalue == 'G') {
             this.value = pvalue;
         }
-    }
-
-    /**
-     * @return valor
-     */
-    public final Character getValue() {
-        return this.value;
     }
 
     @Override

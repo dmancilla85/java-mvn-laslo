@@ -29,16 +29,16 @@ public enum ReturnValue {
     private final int returnCode;
 
     /**
-     * 
-     * @param returnCode 
+     *
+     * @param returnCode
      */
     ReturnValue(int returnCode) {
         this.returnCode = returnCode;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public int getReturnCode() {
         return returnCode;

@@ -25,164 +25,23 @@ package com.eljaguar.mvnlaslo.io;
 public class FlyBaseFasta extends SourceFile {
 
     private static String TYPE = "type=";
-    private static String LOCATION = "loc="; 
-    private static String NAME = "name="; 
-    private static String DBXREF = "dbxref="; 
-    private static String SCORE = "score="; 
-    private static String CHECKSUM = "MD5="; 
-    private static String GENE_ID = "parent="; 
-    private static String RELEASE = "release="; 
-    private static String SPECIES = "species="; 
-    private static String HEADER = 
-            "GeneID" + ROW_DELIMITER 
-            + "TranscriptID" + ROW_DELIMITER 
-            + "Name" + ROW_DELIMITER 
-            + "Release" + ROW_DELIMITER 
-            + "DBXREF" + ROW_DELIMITER 
-            + "Score" + ROW_DELIMITER
-            + "Checksum" + ROW_DELIMITER 
-            + "Species" + ROW_DELIMITER;
-
-    /**
-     * @return the CHECKSUM
-     */
-    public static String getCHECKSUM() {
-        return CHECKSUM;
-    }
-
-    /**
-     * @return the DBXREF
-     */
-    public static String getDBXREF() {
-        return DBXREF;
-    }
-
-    /**
-     * @return the GENE_ID
-     */
-    public static String getGENE_ID() {
-        return GENE_ID;
-    }
-
-    /**
-     * @return the HEADER
-     */
-    public static String getHEADER() {
-        return HEADER;
-    }
-
-    /**
-     * @return the LOCATION
-     */
-    public static String getLOCATION() {
-        return LOCATION;
-    }
-
-    /**
-     * @return the NAME
-     */
-    public static String getNAME() {
-        return NAME;
-    }
-
-    /**
-     * @return the RELEASE
-     */
-    public static String getRELEASE() {
-        return RELEASE;
-    }
-
-    /**
-     * @return the SCORE
-     */
-    public static String getSCORE() {
-        return SCORE;
-    }
-
-    /**
-     * @return the SPECIES
-     */
-    public static String getSPECIES() {
-        return SPECIES;
-    }
-
-    /**
-     * @return the TYPE
-     */
-    public static String getTYPE() {
-        return TYPE;
-    }
-
-    /**
-     * @param aCHECKSUM the CHECKSUM to set
-     */
-    public static void setCHECKSUM(String aCHECKSUM) {
-        CHECKSUM = aCHECKSUM;
-    }
-
-    /**
-     * @param aDBXREF the DBXREF to set
-     */
-    public static void setDBXREF(String aDBXREF) {
-        DBXREF = aDBXREF;
-    }
-
-    /**
-     * @param aGENE_ID the GENE_ID to set
-     */
-    public static void setGENE_ID(String aGENE_ID) {
-        GENE_ID = aGENE_ID;
-    }
-
-    /**
-     * @param aHEADER the HEADER to set
-     */
-    public static void setHEADER(String aHEADER) {
-        HEADER = aHEADER;
-    }
-
-    /**
-     * @param aLOCATION the LOCATION to set
-     */
-    public static void setLOCATION(String aLOCATION) {
-        LOCATION = aLOCATION;
-    }
-
-    /**
-     * @param aNAME the NAME to set
-     */
-    public static void setNAME(String aNAME) {
-        NAME = aNAME;
-    }
-
-    /**
-     * @param aRELEASE the RELEASE to set
-     */
-    public static void setRELEASE(String aRELEASE) {
-        RELEASE = aRELEASE;
-    }
-
-    /**
-     * @param aSCORE the SCORE to set
-     */
-    public static void setSCORE(String aSCORE) {
-        SCORE = aSCORE;
-    }
-
-    /**
-     * @param aSPECIES the SPECIES to set
-     */
-    public static void setSPECIES(String aSPECIES) {
-        SPECIES = aSPECIES;
-    }
-
-    /**
-     * @param aTYPE the TYPE to set
-     */
-    public static void setTYPE(String aTYPE) {
-        TYPE = aTYPE;
-    }
-
+    private static String LOCATION = "loc=";
+    private static String NAME = "name=";
+    private static String DBXREF = "dbxref=";
+    private static String SCORE = "score=";
+    private static String CHECKSUM = "MD5=";
+    private static String GENE_ID = "parent=";
+    private static String RELEASE = "release=";
+    private static String SPECIES = "species=";
+    private static String HEADER =
+            "GeneID" + ROW_DELIMITER
+                    + "TranscriptID" + ROW_DELIMITER
+                    + "Name" + ROW_DELIMITER
+                    + "Release" + ROW_DELIMITER
+                    + "DBXREF" + ROW_DELIMITER
+                    + "Score" + ROW_DELIMITER
+                    + "Checksum" + ROW_DELIMITER
+                    + "Species" + ROW_DELIMITER;
     private String location;
     private String name;
     private String dbxref;
@@ -204,6 +63,146 @@ public class FlyBaseFasta extends SourceFile {
         this.name = "";         //$NON-NLS-1$
         this.dbxref = "";       //$NON-NLS-1$
         this.score = "";        //$NON-NLS-1$
+    }
+
+    /**
+     * @return the CHECKSUM
+     */
+    public static String getCHECKSUM() {
+        return CHECKSUM;
+    }
+
+    /**
+     * @param aCHECKSUM the CHECKSUM to set
+     */
+    public static void setCHECKSUM(String aCHECKSUM) {
+        CHECKSUM = aCHECKSUM;
+    }
+
+    /**
+     * @return the DBXREF
+     */
+    public static String getDBXREF() {
+        return DBXREF;
+    }
+
+    /**
+     * @param aDBXREF the DBXREF to set
+     */
+    public static void setDBXREF(String aDBXREF) {
+        DBXREF = aDBXREF;
+    }
+
+    /**
+     * @return the GENE_ID
+     */
+    public static String getGENE_ID() {
+        return GENE_ID;
+    }
+
+    /**
+     * @param aGENE_ID the GENE_ID to set
+     */
+    public static void setGENE_ID(String aGENE_ID) {
+        GENE_ID = aGENE_ID;
+    }
+
+    /**
+     * @return the HEADER
+     */
+    public static String getHEADER() {
+        return HEADER;
+    }
+
+    /**
+     * @param aHEADER the HEADER to set
+     */
+    public static void setHEADER(String aHEADER) {
+        HEADER = aHEADER;
+    }
+
+    /**
+     * @return the LOCATION
+     */
+    public static String getLOCATION() {
+        return LOCATION;
+    }
+
+    /**
+     * @param aLOCATION the LOCATION to set
+     */
+    public static void setLOCATION(String aLOCATION) {
+        LOCATION = aLOCATION;
+    }
+
+    /**
+     * @return the NAME
+     */
+    public static String getNAME() {
+        return NAME;
+    }
+
+    /**
+     * @param aNAME the NAME to set
+     */
+    public static void setNAME(String aNAME) {
+        NAME = aNAME;
+    }
+
+    /**
+     * @return the RELEASE
+     */
+    public static String getRELEASE() {
+        return RELEASE;
+    }
+
+    /**
+     * @param aRELEASE the RELEASE to set
+     */
+    public static void setRELEASE(String aRELEASE) {
+        RELEASE = aRELEASE;
+    }
+
+    /**
+     * @return the SCORE
+     */
+    public static String getSCORE() {
+        return SCORE;
+    }
+
+    /**
+     * @param aSCORE the SCORE to set
+     */
+    public static void setSCORE(String aSCORE) {
+        SCORE = aSCORE;
+    }
+
+    /**
+     * @return the SPECIES
+     */
+    public static String getSPECIES() {
+        return SPECIES;
+    }
+
+    /**
+     * @param aSPECIES the SPECIES to set
+     */
+    public static void setSPECIES(String aSPECIES) {
+        SPECIES = aSPECIES;
+    }
+
+    /**
+     * @return the TYPE
+     */
+    public static String getTYPE() {
+        return TYPE;
+    }
+
+    /**
+     * @param aTYPE the TYPE to set
+     */
+    public static void setTYPE(String aTYPE) {
+        TYPE = aTYPE;
     }
 
     /**
@@ -406,52 +405,17 @@ public class FlyBaseFasta extends SourceFile {
     }
 
     /**
-     * @return the dbxref
-     */
-    public String getDbxref() {
-        return dbxref;
-    }
-
-    /**
-     * @return the location
-     */
-    public String getLocation() {
-        return location;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return the release
-     */
-    public String getRelease() {
-        return release;
-    }
-
-    /**
-     * @return the score
-     */
-    public String getScore() {
-        return score;
-    }
-
-    /**
-     * @return the species
-     */
-    public String getSpecies() {
-        return species;
-    }
-
-    /**
      * @param checksum the checksum to set
      */
     public void setChecksum(String checksum) {
         this.checksum = checksum;
+    }
+
+    /**
+     * @return the dbxref
+     */
+    public String getDbxref() {
+        return dbxref;
     }
 
     /**
@@ -462,10 +426,24 @@ public class FlyBaseFasta extends SourceFile {
     }
 
     /**
+     * @return the location
+     */
+    public String getLocation() {
+        return location;
+    }
+
+    /**
      * @param location the location to set
      */
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -476,6 +454,13 @@ public class FlyBaseFasta extends SourceFile {
     }
 
     /**
+     * @return the release
+     */
+    public String getRelease() {
+        return release;
+    }
+
+    /**
      * @param release the release to set
      */
     public void setRelease(String release) {
@@ -483,10 +468,24 @@ public class FlyBaseFasta extends SourceFile {
     }
 
     /**
+     * @return the score
+     */
+    public String getScore() {
+        return score;
+    }
+
+    /**
      * @param score the score to set
      */
     public void setScore(String score) {
         this.score = score;
+    }
+
+    /**
+     * @return the species
+     */
+    public String getSpecies() {
+        return species;
     }
 
     /**

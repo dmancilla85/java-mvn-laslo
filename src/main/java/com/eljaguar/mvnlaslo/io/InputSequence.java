@@ -48,12 +48,12 @@ public enum InputSequence {
      * Generic FASTA sequence (no parseable tags)
      */
     GENERIC,
-    
+
     /**
      * Generic FASTA used in Random Generation
      */
     GENBANK_RND,
-    
+
     /**
      * Vienna Brackets file
      */

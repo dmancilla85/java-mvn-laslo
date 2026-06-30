@@ -34,20 +34,20 @@ public class Generic extends SourceFile {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
-    @Override
-    public String toString() {
-        return "GenericID [sequenceID=" + getGeneID() + "]";
+    public static String getHeader() {
+        return Generic.HEADER;
     }
 
     /**
      *
      * @return
      */
-    public static String getHeader() {
-        return Generic.HEADER;
+    @Override
+    public String toString() {
+        return "GenericID [sequenceID=" + getGeneID() + "]";
     }
 
     /**
@@ -60,8 +60,8 @@ public class Generic extends SourceFile {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
     public String toRowCSV() {

@@ -58,7 +58,7 @@ public class UShuffle {
         // Generation of the iterator of id,sequence
         LinkedHashMap<String, DNASequence> fasta = null;
         try {
-            fasta = readFastaDNASequence(new File("./ext/" + fileName + ext), false);
+            fasta = (LinkedHashMap<String, DNASequence>) readFastaDNASequence(new File("./ext/" + fileName + ext), false);
         } catch (IOException ex) {
             Logger.getLogger(UShuffle.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -78,7 +78,7 @@ public class UShuffle {
         String value;
 
         if (qualifier.get(name) != null) {
-            value = ((Qualifier) ((List) (qualifier.get(name))).get(0)).getValue();
+            value = ((Qualifier) ((List<?>) (qualifier.get(name))).get(0)).getValue();
         } else {
             value = "N/A";
         }
@@ -89,22 +89,21 @@ public class UShuffle {
     /**
      * Generate shuffled sequences with the k-let value indicated.
      *
-     * @param path Path of the file to shuffle
-     * @param filename Name of the file to shuffle
-     * @param fasta Hashmap of DNASequence's from BioJava
-     * @param nRandoms Number of random sequences to generate
-     * @param k Value of k-let permutations
+     * @param path      Path of the file to shuffle
+     * @param filename  Name of the file to shuffle
+     * @param fasta     Hashmap of DNASequence's from BioJava
+     * @param nRandoms  Number of random sequences to generate
+     * @param k         Value of k-let permutations
      * @param isGenBank It tells if it's a GenBank file
-     * @return Last process exit value (an integer)
      */
     @SuppressWarnings("NestedAssignment")
-    public static int makeShuffleSequences(String path, String filename,
-            Map<String, DNASequence> fasta, int nRandoms, int k,
-            boolean isGenBank) {
+    public static void makeShuffleSequences(String path, String filename,
+                                            Map<String, DNASequence> fasta, int nRandoms, int k,
+                                            boolean isGenBank) {
 
         char sep = '@';
         int exitVal = 0;
-        String aux = "";
+        StringBuilder aux = new StringBuilder();
         String gene = "";
         String synonym = "";
         String note = "";
@@ -135,7 +134,6 @@ public class UShuffle {
                 }
 
                 file.createNewFile();
-
                 FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
                 try (BufferedWriter bw = new BufferedWriter(fw)) {
 
@@ -145,9 +143,9 @@ public class UShuffle {
                         if (!isGenBank) {
                             header = element.getOriginalHeader();
                         } else {
-                            Map qualGene = ((FeatureInterface) element.getFeaturesByType("gene")
+                            Map<?, ?> qualGene = ((FeatureInterface<?, ?>) element.getFeaturesByType("gene")
                                     .toArray()[0]).getQualifiers();
-                            FeatureInterface featCds = ((FeatureInterface) element.getFeaturesByType("CDS").toArray()[0]);
+                            FeatureInterface<?, ?> featCds = ((FeatureInterface<?, ?>) element.getFeaturesByType("CDS").toArray()[0]);
 
                             if (!qualGene.isEmpty()) {
 
@@ -177,8 +175,8 @@ public class UShuffle {
 
                         Process pr
                                 = new ProcessBuilder(COMMAND_SHUFFLE, "-s", sequence,
-                                        "-k", Integer.toString(k),
-                                        "-seed", String.valueOf(gen.nextInt(99999))).start();
+                                "-k", Integer.toString(k),
+                                "-seed", String.valueOf(gen.nextInt(99999))).start();
 
                         try (InputStream in = pr.getInputStream()) {
                             int c;
@@ -186,14 +184,14 @@ public class UShuffle {
                             while ((c = in.read()) != -1) {
 
                                 if (c != '\n') {
-                                    aux += (char) c;
+                                    aux.append((char) c);
                                 } else {
                                     bw.write(">" + header);
                                     bw.newLine();
-                                    bw.write(aux);
+                                    bw.write(aux.toString());
                                     bw.newLine();
                                     bw.newLine();
-                                    aux = "";
+                                    aux = new StringBuilder();
                                 }
 
                             }
@@ -213,6 +211,5 @@ public class UShuffle {
             }
         }
 
-        return exitVal;
     }
 }

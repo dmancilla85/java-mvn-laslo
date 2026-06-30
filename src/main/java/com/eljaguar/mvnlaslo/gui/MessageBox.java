@@ -25,17 +25,17 @@ import javax.swing.*;
  */
 public class MessageBox {
 
-    private MessageBox(){
+    private MessageBox() {
         // do nothing
     }
 
     /**
-     * 
+     *
      * @param infoMessage Message to show
-     * @param titleBar Title of the message box
+     * @param titleBar    Title of the message box
      */
     public static void showInformationBox(String infoMessage, String titleBar) {
-        JOptionPane.showMessageDialog(null, infoMessage, "" + 
+        JOptionPane.showMessageDialog(null, infoMessage, "" +
                 titleBar, JOptionPane.INFORMATION_MESSAGE);
     }
 }

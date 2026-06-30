@@ -28,24 +28,17 @@ public class BioMartFasta extends SourceFile {
     private String[] columns;
 
     /**
-     * 
+     *
      */
-    public BioMartFasta(){
+    public BioMartFasta() {
         columns = new String[nCols];
     }
-    
+
     /**
      * @return the fs
      */
     public static char getFs() {
         return fs;
-    }
-
-    /**
-     * @return the nCols
-     */
-    public static int getnCols() {
-        return nCols;
     }
 
     /**
@@ -56,18 +49,17 @@ public class BioMartFasta extends SourceFile {
     }
 
     /**
+     * @return the nCols
+     */
+    public static int getnCols() {
+        return nCols;
+    }
+
+    /**
      * @param anCols the nCols to set
      */
     public static void setnCols(int anCols) {
         nCols = anCols;
-    }
-    
-    /**
-     *
-     * @return
-     */
-    public int getNumColumns() {
-        return getColumns().length;
     }
 
     /**
@@ -75,13 +67,21 @@ public class BioMartFasta extends SourceFile {
      * @return
      */
     public static String getHeader() {
-        String header = "";
+        StringBuilder header = new StringBuilder();
 
         for (int i = 0; i < getnCols(); i++) {
-            header += "Column" + (i + 1) + ROW_DELIMITER;
+            header.append("Column").append(i + 1).append(ROW_DELIMITER);
         }
 
-        return header;
+        return header.toString();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getNumColumns() {
+        return getColumns().length;
     }
 
     /**
@@ -112,14 +112,14 @@ public class BioMartFasta extends SourceFile {
      */
     @Override
     public String toRowCSV() {
-        String row = "";
+        StringBuilder row = new StringBuilder();
         int i;
 
         for (i = 0; i < getColumns().length; i++) {
-            row += getColumns()[i] + ROW_DELIMITER;
+            row.append(getColumns()[i]).append(ROW_DELIMITER);
         }
 
-        return row;
+        return row.toString();
     }
 
     /**

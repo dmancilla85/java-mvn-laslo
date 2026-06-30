@@ -39,431 +39,432 @@ import static java.lang.System.out;
  */
 public class LoopMatcherThread implements Runnable {
 
-  private final int LENGTH_CHECK_AUX = 15;
-  private final boolean extendedMode;
-  private final boolean searchReverse;
-  private final String additionalSequence;
-  private final int maxLength;
-  private final int minLength;
-  private final InputSequence inputType;
-  private Iterator<String> patternItr;
-  private final CSVWriter writer;
-  private final DNASequence dnaElement;
-  private static Semaphore MUTEX = new Semaphore(1);
-  private static Semaphore SEM;
-  private static boolean started = false;
-  private CountDownLatch latch;
-  private final ResourceBundle bundle;
-  private final int temperature;
-  private final boolean avoidLonelyPairs;
-  private final Vienna viennaElement;
+    private static Semaphore MUTEX = new Semaphore(1);
+    private static Semaphore SEM;
+    private static boolean started = false;
+    private final boolean extendedMode;
+    private final boolean searchReverse;
+    private final String additionalSequence;
+    private final int maxLength;
+    private final int minLength;
+    private final InputSequence inputType;
+    private final CSVWriter writer;
+    private final DNASequence dnaElement;
+    private final ResourceBundle bundle;
+    private final int temperature;
+    private final boolean avoidLonelyPairs;
+    private final Vienna viennaElement;
+    private Iterator<String> patternItr;
+    private CountDownLatch latch;
 
-  /**
-   *
-   * @param extendedMode
-   * @param additionalSequence
-   * @param maxLength
-   * @param minLength
-   * @param dnaElement
-   * @param inputType
-   * @param patternItr
-   * @param writer
-   * @param searchReverse
-   * @param bundle
-   * @param temperature
-   * @param avoidLonelyPairs
-   */
-  public LoopMatcherThread(boolean extendedMode, String additionalSequence,
-     int maxLength,  int minLength,  DNASequence dnaElement,
-     InputSequence inputType,  Iterator<String> patternItr,
-     CSVWriter writer,  boolean searchReverse,
-     ResourceBundle bundle,  int temperature,
-     boolean avoidLonelyPairs) {
+    /**
+     *
+     * @param extendedMode
+     * @param additionalSequence
+     * @param maxLength
+     * @param minLength
+     * @param dnaElement
+     * @param inputType
+     * @param patternItr
+     * @param writer
+     * @param searchReverse
+     * @param bundle
+     * @param temperature
+     * @param avoidLonelyPairs
+     */
+    public LoopMatcherThread(boolean extendedMode, String additionalSequence,
+                             int maxLength, int minLength, DNASequence dnaElement,
+                             InputSequence inputType, Iterator<String> patternItr,
+                             CSVWriter writer, boolean searchReverse,
+                             ResourceBundle bundle, int temperature,
+                             boolean avoidLonelyPairs) {
 
-     int countThreads;
-    this.extendedMode = extendedMode;
-    this.additionalSequence = additionalSequence;
-    this.maxLength = maxLength;
-    this.minLength = minLength;
-    this.inputType = inputType;
-    this.dnaElement = dnaElement;
-    this.patternItr = patternItr;
-    this.writer = writer;
-    this.searchReverse = searchReverse;
-    this.bundle = bundle;
-    this.temperature = temperature;
-    this.avoidLonelyPairs = avoidLonelyPairs;
-    this.viennaElement = null;
+        int countThreads;
+        this.extendedMode = extendedMode;
+        this.additionalSequence = additionalSequence;
+        this.maxLength = maxLength;
+        this.minLength = minLength;
+        this.inputType = inputType;
+        this.dnaElement = dnaElement;
+        this.patternItr = patternItr;
+        this.writer = writer;
+        this.searchReverse = searchReverse;
+        this.bundle = bundle;
+        this.temperature = temperature;
+        this.avoidLonelyPairs = avoidLonelyPairs;
+        this.viennaElement = null;
 
-    if (!started) {
-      // 2 * n + 1
-      countThreads = 2 * OSValidator.getNumberOfCPUCores() + 1;
+        if (!started) {
+            // 2 * n + 1
+            countThreads = 2 * OSValidator.getNumberOfCPUCores() + 1;
 
-      out.println(java.text.MessageFormat.format(bundle
-               .getString("USING_N_CORES"), countThreads));
-      SEM = new Semaphore(countThreads);
-      started = true;
-    }
-  }
-
-  /**
-   * @param viennaElement
-   * @param maxLength
-   * @param minLength
-   * @param additionalSequence
-   * @param patternItr
-   * @param writer
-   * @param bundle
-   */
-  public LoopMatcherThread( Vienna viennaElement,
-     int maxLength,  int minLength,  String additionalSequence,
-     Iterator<String> patternItr,  CSVWriter writer,
-     ResourceBundle bundle) {
-
-     int countThreads;
-    this.extendedMode = false;
-    this.additionalSequence = additionalSequence;
-    this.maxLength = maxLength;
-    this.minLength = minLength;
-    this.inputType = InputSequence.VIENNA;
-    this.dnaElement = null;
-    this.patternItr = patternItr;
-    this.writer = writer;
-    this.searchReverse = false;
-    this.bundle = bundle;
-    this.temperature = RNAFoldInterface.DEFAULT_TEMPERATURE;
-    this.avoidLonelyPairs = false;
-    this.viennaElement = viennaElement;
-
-    if (!started) {
-      // 2 * n + 1
-      countThreads = 2 * OSValidator.getNumberOfCPUCores() + 1;
-
-      out.println(java.text.MessageFormat.format(bundle
-               .getString("USING_N_CORES"), countThreads));
-      SEM = new Semaphore(countThreads);
-      started = true;
-    }
-  }
-
-  /**
-   * @return the bundle
-   */
-  public final ResourceBundle getBundle() {
-    return bundle;
-  }
-
-/**
- *
- * @param currentPattern
- */
-  private void runNormalMode( String currentPattern) {
-    SequenceAnalizer.beginDefaultMatching(getDnaElement(), currentPattern,
-      getWriter(), false, getMaxLength(), getMinLength(),
-      getInputType(), getAdditionalSequence(), temperature,
-      avoidLonelyPairs);
-
-    if (isSearchReverse()) {
-      SequenceAnalizer.beginDefaultMatching(getDnaElement(),
-        currentPattern, getWriter(), true, getMaxLength(),
-        getMinLength(), getInputType(),
-        getAdditionalSequence(), temperature,
-        avoidLonelyPairs);
-    }
-  }
-
-  /**
-   *
-   * @param currentPattern
-   */
-  private void runViennaMode( String currentPattern) {
-    SequenceAnalizer.beginDefaultMatching(viennaElement, currentPattern, writer,
-      false, maxLength, minLength, additionalSequence);
-  }
-
-  /**
-   *
-   * @param fold
-   * @param currentPattern
-   */
-  private void runExtendedMode( RNAFoldInterface fold,
-     String currentPattern) {
-    try {
-      getSEM().acquire();
-      beginFullMatching(getDnaElement(),
-        fold.getStructure(),
-        currentPattern, getWriter(), false, getMaxLength(),
-        getMinLength(), getInputType(),
-        getAdditionalSequence(), temperature,
-        avoidLonelyPairs);
-    } catch (InterruptedException ex) {
-      String msg = "#";
-
-      if (ex.getLocalizedMessage() != null) {
-        msg += ex.getLocalizedMessage() + " - ";
-      }
-      if (ex.getMessage() != null) {
-        msg += ex.getMessage() + " - ";
-      }
-
-      out.println(java.text.MessageFormat.format(
-        getBundle()
-          .getString("ERROR_EX"), msg));
-      out.println("1-Exception: " + ex);
-    } finally {
-      getSEM().release();
-    }
-
-    if (isSearchReverse()) {
-      try {
-        getSEM().acquire();
-        beginFullMatching(getDnaElement(),
-          fold.getStructure(),
-          currentPattern, getWriter(), true, getMaxLength(),
-          getMinLength(), getInputType(),
-          getAdditionalSequence(), temperature,
-          avoidLonelyPairs);
-
-      } catch (InterruptedException ex) {
-        String msg = "#";
-
-        if (ex.getLocalizedMessage() != null) {
-          msg += ex.getLocalizedMessage() + " - ";
+            out.println(java.text.MessageFormat.format(bundle
+                    .getString("USING_N_CORES"), countThreads));
+            SEM = new Semaphore(countThreads);
+            started = true;
         }
-        if (ex.getMessage() != null) {
-          msg += ex.getMessage() + " - ";
-        }
-
-        out.println(java.text.MessageFormat.format(
-          getBundle()
-            .getString("ERROR_EX"), msg));
-        out.println("2-Exception: " + ex);
-      } finally {
-        getSEM().release();
-      }
     }
-  }
 
-  /**
-   *
-   * @return
-   */
-  private RNAFoldInterface checkExtendedMode() {
-    RNAFoldInterface fold;
-    String sequence = getDnaElement().getRNASequence()
-      .getSequenceAsString();
-    String idSeq = getDnaElement().getAccession().getID() + " - "
-      + getDnaElement().getAccession().getID();
+    /**
+     * @param viennaElement
+     * @param maxLength
+     * @param minLength
+     * @param additionalSequence
+     * @param patternItr
+     * @param writer
+     * @param bundle
+     */
+    public LoopMatcherThread(Vienna viennaElement,
+                             int maxLength, int minLength, String additionalSequence,
+                             Iterator<String> patternItr, CSVWriter writer,
+                             ResourceBundle bundle) {
 
-    try {
+        int countThreads;
+        this.extendedMode = false;
+        this.additionalSequence = additionalSequence;
+        this.maxLength = maxLength;
+        this.minLength = minLength;
+        this.inputType = InputSequence.VIENNA;
+        this.dnaElement = null;
+        this.patternItr = patternItr;
+        this.writer = writer;
+        this.searchReverse = false;
+        this.bundle = bundle;
+        this.temperature = RNAFoldInterface.DEFAULT_TEMPERATURE;
+        this.avoidLonelyPairs = false;
+        this.viennaElement = viennaElement;
 
-      if (sequence.length() >= RNAFoldConfiguration.SEQUENCE_MAX_SIZE) {
-        String idAux;
+        if (!started) {
+            // 2 * n + 1
+            countThreads = 2 * OSValidator.getNumberOfCPUCores() + 1;
 
-        if (idSeq == null) {
-          idAux = "*";
-        } else {
-          if (idSeq.length() > LENGTH_CHECK_AUX) {
-            idAux = idSeq.substring(0, LENGTH_CHECK_AUX - 1);
-          } else {
-            idAux = idSeq;
-          }
+            out.println(java.text.MessageFormat.format(bundle
+                    .getString("USING_N_CORES"), countThreads));
+            SEM = new Semaphore(countThreads);
+            started = true;
+        }
+    }
+
+    /**
+     *
+     * @return the MUTEX
+     */
+    public final static Semaphore getMUTEX() {
+        return MUTEX;
+    }
+
+    /**
+     * @param aMUTEX the MUTEX to set
+     */
+    public final static void setMUTEX(Semaphore aMUTEX) {
+        MUTEX = aMUTEX;
+    }
+
+    /**
+     * @return the SEM
+     */
+    public final static Semaphore getSEM() {
+        return SEM;
+    }
+
+    /**
+     * @param aSEM the SEM to set
+     */
+    public final static void setSEM(Semaphore aSEM) {
+        SEM = aSEM;
+    }
+
+    /**
+     * @return the started
+     */
+    public final static boolean isStarted() {
+        return started;
+    }
+
+    /**
+     * @param aStarted the started to set
+     */
+    public final static void setStarted(boolean aStarted) {
+        started = aStarted;
+    }
+
+    /**
+     * @return the bundle
+     */
+    public final ResourceBundle getBundle() {
+        return bundle;
+    }
+
+    /**
+     *
+     * @param currentPattern
+     */
+    private void runNormalMode(String currentPattern) {
+        SequenceAnalizer.beginDefaultMatching(getDnaElement(), currentPattern,
+                getWriter(), false, getMaxLength(), getMinLength(),
+                getInputType(), getAdditionalSequence(), temperature,
+                avoidLonelyPairs);
+
+        if (isSearchReverse()) {
+            SequenceAnalizer.beginDefaultMatching(getDnaElement(),
+                    currentPattern, getWriter(), true, getMaxLength(),
+                    getMinLength(), getInputType(),
+                    getAdditionalSequence(), temperature,
+                    avoidLonelyPairs);
+        }
+    }
+
+    /**
+     *
+     * @param currentPattern
+     */
+    private void runViennaMode(String currentPattern) {
+        SequenceAnalizer.beginDefaultMatching(viennaElement, currentPattern, writer,
+                false, maxLength, minLength, additionalSequence);
+    }
+
+    /**
+     *
+     * @param fold
+     * @param currentPattern
+     */
+    private void runExtendedMode(RNAFoldInterface fold,
+                                 String currentPattern) {
+        try {
+            getSEM().acquire();
+            beginFullMatching(getDnaElement(),
+                    fold.getStructure(),
+                    currentPattern, getWriter(), false, getMaxLength(),
+                    getMinLength(), getInputType(),
+                    getAdditionalSequence(), temperature,
+                    avoidLonelyPairs);
+        } catch (InterruptedException ex) {
+            String msg = "#";
+
+            if (ex.getLocalizedMessage() != null) {
+                msg += ex.getLocalizedMessage() + " - ";
+            }
+            if (ex.getMessage() != null) {
+                msg += ex.getMessage() + " - ";
+            }
+
+            out.println(java.text.MessageFormat.format(
+                    getBundle()
+                            .getString("ERROR_EX"), msg));
+            out.println("1-Exception: " + ex);
+        } finally {
+            getSEM().release();
         }
 
-        out.println(idAux + " - Error: Provided sequence exceeds size limit of "
-          + RNAFoldConfiguration.SEQUENCE_MAX_SIZE + " nt.");
-        getLatch().countDown();
-        return null;
-      }
+        if (isSearchReverse()) {
+            try {
+                getSEM().acquire();
+                beginFullMatching(getDnaElement(),
+                        fold.getStructure(),
+                        currentPattern, getWriter(), true, getMaxLength(),
+                        getMinLength(), getInputType(),
+                        getAdditionalSequence(), temperature,
+                        avoidLonelyPairs);
 
-      fold = new RNAFoldInterface(sequence, temperature, avoidLonelyPairs);
+            } catch (InterruptedException ex) {
+                String msg = "#";
 
-    } catch (Exception ex) {
-      out.println("[" + idSeq + "] Error. Sequence Length: "
-        + sequence.length());
+                if (ex.getLocalizedMessage() != null) {
+                    msg += ex.getLocalizedMessage() + " - ";
+                }
+                if (ex.getMessage() != null) {
+                    msg += ex.getMessage() + " - ";
+                }
 
-      if (ex.getMessage() != null) {
-        if (ex.getMessage().length() > 0) {
-          out.println(this.dnaElement.getAccession() + " - RNAFold ERROR: "
-            + ex.getMessage());
-        } else {
-          out.println(this.dnaElement.getAccession()
-            + " - RNAFold unknown error.");
+                out.println(java.text.MessageFormat.format(
+                        getBundle()
+                                .getString("ERROR_EX"), msg));
+                out.println("2-Exception: " + ex);
+            } finally {
+                getSEM().release();
+            }
         }
-      }
-
-      return null;
     }
 
-    if (fold.gotError()) {
-      out.println("**RNAFold error**");
-      return null;
+    /**
+     *
+     * @return
+     */
+    private RNAFoldInterface checkExtendedMode() {
+        RNAFoldInterface fold;
+        String sequence = getDnaElement().getRNASequence()
+                .getSequenceAsString();
+        String idSeq = getDnaElement().getAccession().getID() + " - "
+                + getDnaElement().getAccession().getID();
+
+        try {
+
+            if (sequence.length() >= RNAFoldConfiguration.SEQUENCE_MAX_SIZE) {
+                String idAux;
+
+                if (idSeq == null) {
+                    idAux = "*";
+                } else {
+                    int LENGTH_CHECK_AUX = 15;
+                    if (idSeq.length() > LENGTH_CHECK_AUX) {
+                        idAux = idSeq.substring(0, LENGTH_CHECK_AUX - 1);
+                    } else {
+                        idAux = idSeq;
+                    }
+                }
+
+                out.println(idAux + " - Error: Provided sequence exceeds size limit of "
+                        + RNAFoldConfiguration.SEQUENCE_MAX_SIZE + " nt.");
+                getLatch().countDown();
+                return null;
+            }
+
+            fold = new RNAFoldInterface(sequence, temperature, avoidLonelyPairs);
+
+        } catch (Exception ex) {
+            out.println("[" + idSeq + "] Error. Sequence Length: "
+                    + sequence.length());
+
+            if (ex.getMessage() != null) {
+                if (!ex.getMessage().isEmpty()) {
+                    out.println(this.dnaElement.getAccession() + " - RNAFold ERROR: "
+                            + ex.getMessage());
+                } else {
+                    out.println(this.dnaElement.getAccession()
+                            + " - RNAFold unknown error.");
+                }
+            }
+
+            return null;
+        }
+
+        if (fold.gotError()) {
+            out.println("**RNAFold error**");
+            return null;
+        }
+
+        return fold;
     }
 
-    return fold;
-  }
+    /**
+     *
+     */
+    @Override
+    public final void run() {
 
-  /**
-   *
-   */
-  @Override
-  public final void run() {
+        RNAFoldInterface fold = new RNAFoldInterface();
+        String currentPattern = "";
+        Iterator<String> patterns = getPatternItr();
 
-    RNAFoldInterface fold = new RNAFoldInterface();
-    String currentPattern="";
-    Iterator<String> patterns = getPatternItr();
-
-    // sólo para modo dos
-    if (isExtendedMode()) {
-      fold = checkExtendedMode();
-    }
-    // III. Loop level
-    while (patterns.hasNext()) {
-
-      try{
-      currentPattern = patterns.next().trim().toUpperCase();
-      } catch(Exception e){
-        out.println("err: "+e.getMessage());
-      }
-      // 1. Stem research
-      if (this.inputType == InputSequence.VIENNA) {
-        runViennaMode(currentPattern);
-      } else {
+        // sólo para modo dos
         if (isExtendedMode()) {
-          runExtendedMode(fold, currentPattern);
-        } else {
-          runNormalMode(currentPattern);
+            fold = checkExtendedMode();
         }
-      }
+        // III. Loop level
+        while (patterns.hasNext()) {
+
+            try {
+                currentPattern = patterns.next().trim().toUpperCase();
+            } catch (Exception e) {
+                out.println("err: " + e.getMessage());
+            }
+            // 1. Stem research
+            if (this.inputType == InputSequence.VIENNA) {
+                runViennaMode(currentPattern);
+            } else {
+                if (isExtendedMode()) {
+                    assert fold != null;
+                    runExtendedMode(fold, currentPattern);
+                } else {
+                    runNormalMode(currentPattern);
+                }
+            }
+        }
+        getLatch().countDown();
     }
-    getLatch().countDown();
-  }
 
-  /**
-   * @return the additionalSequence
-   */
-  public final String getAdditionalSequence() {
-    return additionalSequence;
-  }
+    /**
+     * @return the additionalSequence
+     */
+    public final String getAdditionalSequence() {
+        return additionalSequence;
+    }
 
-  /**
-   * @return the dnaElement
-   */
-  public final DNASequence getDnaElement() {
-    return dnaElement;
-  }
+    /**
+     * @return the dnaElement
+     */
+    public final DNASequence getDnaElement() {
+        return dnaElement;
+    }
 
-  /**
-   * @return the inputType
-   */
-  public final InputSequence getInputType() {
-    return inputType;
-  }
+    /**
+     * @return the inputType
+     */
+    public final InputSequence getInputType() {
+        return inputType;
+    }
 
-  /**
-   * @return the latch
-   */
-  public final CountDownLatch getLatch() {
-    return latch;
-  }
+    /**
+     * @return the latch
+     */
+    public final CountDownLatch getLatch() {
+        return latch;
+    }
 
-  /**
-   * @return the maxLength
-   */
-  public final int getMaxLength() {
-    return maxLength;
-  }
+    /**
+     *
+     * @param latch
+     */
+    public final void setLatch(CountDownLatch latch) {
+        this.latch = latch;
+    }
 
-  /**
-   * @return the minLength
-   */
-  public final int getMinLength() {
-    return minLength;
-  }
+    /**
+     * @return the maxLength
+     */
+    public final int getMaxLength() {
+        return maxLength;
+    }
 
-  /**
-   * @return the patternItr
-   */
-  public final Iterator<String> getPatternItr() {
-    return patternItr;
-  }
+    /**
+     * @return the minLength
+     */
+    public final int getMinLength() {
+        return minLength;
+    }
 
-  /**
-   * @return the writer
-   */
-  public final CSVWriter getWriter() {
-    return writer;
-  }
+    /**
+     * @return the patternItr
+     */
+    public final Iterator<String> getPatternItr() {
+        return patternItr;
+    }
 
-  /**
-   * @return the extendedMode
-   */
-  public final boolean isExtendedMode() {
-    return extendedMode;
-  }
+    /**
+     * @param patternItr the patternItr to set
+     */
+    public final void setPatternItr(Iterator<String> patternItr) {
+        this.patternItr = patternItr;
+    }
 
-  /**
-   * @return the searchReverse
-   */
-  public final boolean isSearchReverse() {
-    return searchReverse;
-  }
+    /**
+     * @return the writer
+     */
+    public final CSVWriter getWriter() {
+        return writer;
+    }
 
-  /**
-   * @param patternItr the patternItr to set
-   */
-  public final void setPatternItr(Iterator<String> patternItr) {
-    this.patternItr = patternItr;
-  }
+    /**
+     * @return the extendedMode
+     */
+    public final boolean isExtendedMode() {
+        return extendedMode;
+    }
 
-  /**
-   *
-   * @return the MUTEX
-   */
-  public final static Semaphore getMUTEX() {
-    return MUTEX;
-  }
-
-  /**
-   * @return the SEM
-   */
-  public final static Semaphore getSEM() {
-    return SEM;
-  }
-
-  /**
-   * @return the started
-   */
-  public final static boolean isStarted() {
-    return started;
-  }
-
-  /**
-   * @param aMUTEX the MUTEX to set
-   */
-  public final static void setMUTEX( Semaphore aMUTEX) {
-    MUTEX = aMUTEX;
-  }
-
-  /**
-   * @param aSEM the SEM to set
-   */
-  public final static void setSEM( Semaphore aSEM) {
-    SEM = aSEM;
-  }
-
-  /**
-   * @param aStarted the started to set
-   */
-  public final static void setStarted( boolean aStarted) {
-    started = aStarted;
-  }
-
-  /**
-   *
-   * @param latch
-   */
-  public final void setLatch( CountDownLatch latch) {
-    this.latch = latch;
-  }
+    /**
+     * @return the searchReverse
+     */
+    public final boolean isSearchReverse() {
+        return searchReverse;
+    }
 }

@@ -20,6 +20,7 @@ package com.eljaguar.mvnlaslo.gui;
 import com.eljaguar.mvnlaslo.core.LoopMatcher;
 import com.eljaguar.mvnlaslo.io.GenBank;
 import org.biojava.nbio.core.sequence.DNASequence;
+
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ class GUISwingWorker extends
                         // call the file as the first ncbi id
                         pathIn = GenBank.makeFile(frame.getPathOut(), dnaFile,
                                 geneList.get(0).trim());
-                        
+
                         if (pathIn == null) {
                             out.println("Skipping this file...");
                         } else {
