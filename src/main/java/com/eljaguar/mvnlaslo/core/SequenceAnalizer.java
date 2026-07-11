@@ -28,7 +28,11 @@ import org.biojava.nbio.core.sequence.features.Qualifier;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,12 +87,6 @@ public class SequenceAnalizer {
         }
 
         return structure;
-    }
-
-    public static void main(String[] args) {
-        String prueba = "UGCAUUGCCGUUGCAAUCGA";
-        String salida = isBasicHairpin(3, 6, 4, prueba);
-        out.println("El resultado es: " + salida);
     }
 
     /**
@@ -184,8 +182,6 @@ public class SequenceAnalizer {
                     }
 
                 }
-
-                //extremoDer = extremoDer.substring(0, posPar + 1);
 
                 if (posPar + 1 < minLength) {
                     return "";
@@ -375,18 +371,18 @@ public class SequenceAnalizer {
                 slr.checkInternalLoops();
                 slr.setMfe(vienna.getMfe());
                 slr.setNLoop(extIzq);
-                slr.setPercent_AG();
+                slr.setPercentAg();
                 slr.setEndsAt(loopPos + loopLength + extDer);
-                slr.setPercA_sequence(
+                slr.setPercASequence(
                         (rnaSequence.length() - rnaSequence.replace("A", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercG_sequence(
+                slr.setPercGSequence(
                         (rnaSequence.length() - rnaSequence.replace("G", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercC_sequence(
+                slr.setPercCSequence(
                         (rnaSequence.length() - rnaSequence.replace("C", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercU_sequence(
+                slr.setPercUSequence(
                         (rnaSequence.length() - rnaSequence.replace("U", "")
                                 .length()) / (float) rnaSequence.length());
 
@@ -411,7 +407,7 @@ public class SequenceAnalizer {
             StemLoop element = itr.next();
 
             try {
-                LoopMatcherThread.getMUTEX().acquire();
+                LoopMatcherThread.getMutex().acquire();
                 writer.writeNext(element.toRowCSV().split(";")); //NOI18N
             } catch (InterruptedException ex) {
                 out.println(java.text.MessageFormat.format(
@@ -419,7 +415,7 @@ public class SequenceAnalizer {
                                 .getString("ERROR_EX"), ex.getMessage()));
                 out.println("*Method: sequenceResearch*MUTEX");
             } finally {
-                LoopMatcherThread.getMUTEX().release();
+                LoopMatcherThread.getMutex().release();
             }
         }
 
@@ -427,34 +423,6 @@ public class SequenceAnalizer {
         slrList.clear();
 
         return size;
-    }
-
-    /**
-     * @param sequence f
-     * @param position f
-     * @param loopPos  f
-     * @param loopSize f
-     */
-    public static void saveToFileLoops(final String sequence, final int position,
-                                       final int loopPos, final int loopSize) {
-        FileWriter fw;
-        int loopRelative = (loopPos - position) + 1;
-
-        if (isComplementaryRNAWooble(sequence.charAt(loopRelative - 1),
-                sequence.charAt(loopRelative + loopSize))
-                && isComplementaryRNAWooble(sequence.charAt(loopRelative - 2),
-                sequence.charAt(loopRelative + loopSize + 1))
-                && isComplementaryRNAWooble(sequence.charAt(loopRelative - 3),
-                sequence.charAt(loopRelative + loopSize + 2))) {
-            try {
-                fw = new FileWriter("secuencias.fa", true);
-                fw.write(">" + position + '\n');
-                fw.write(sequence + '\n');
-                fw.close();
-            } catch (IOException e) {
-                out.println("Error al grabar: " + e.getMessage());
-            }
-        }
     }
 
     /**
@@ -537,10 +505,6 @@ public class SequenceAnalizer {
                         && (loopPos + loopLength + length) < sequenceLength) {
                     rnaSeq = rnaSequence.substring(loopPos - length,
                             loopPos + loopLength + length);
-                    // watch this shit ***********************
-                    //saveFuckingLoops(rnaSeq, loopPos - length + 1,
-                    //loopPos, rnaLoop.length());
-                    // ***************************************
                     // 2.a first validation of 1st loop close pairs
                     isValidHairpin = isRNAPair(rnaSequence.charAt(loopPos - 1),
                             rnaSequence.charAt(loopPos + rnaLoop.length()));
@@ -557,7 +521,7 @@ public class SequenceAnalizer {
                     if (isValidHairpin) {
 
                         try { // ..is it useful??..
-                            LoopMatcherThread.getSEM().acquire();
+                            LoopMatcherThread.getSem().acquire();
                             // call RNAFoldInterface aplication
                             fold = new RNAFoldInterface(rnaSeq, temperature,
                                     avoidLonelyPairs);
@@ -567,7 +531,7 @@ public class SequenceAnalizer {
                                     SequenceAnalizer.class.getClass(),
                                     ex.getMessage());
                         } finally {
-                            LoopMatcherThread.getSEM().release();
+                            LoopMatcherThread.getSem().release();
                         }
 
                         hairpinModel = fold.getStructure();
@@ -648,20 +612,20 @@ public class SequenceAnalizer {
                         out.println(fastaSeq.getAccession() + " - RNAFold unknown error.");
                     }
                 }
-                //out.println(slr.getId_fasta().toRowCSV());
+                //out.println(slr.getIdFasta().toRowCSV());
                 slr.setNLoop(extIzq);
-                slr.setPercent_AG();
+                slr.setPercentAg();
                 slr.setEndsAt(loopPos + loopLength + extDer);
-                slr.setPercA_sequence(
+                slr.setPercASequence(
                         (rnaSequence.length() - rnaSequence.replace("A", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercG_sequence(
+                slr.setPercGSequence(
                         (rnaSequence.length() - rnaSequence.replace("G", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercC_sequence(
+                slr.setPercCSequence(
                         (rnaSequence.length() - rnaSequence.replace("C", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercU_sequence(
+                slr.setPercUSequence(
                         (rnaSequence.length() - rnaSequence.replace("U", "")
                                 .length()) / (float) rnaSequence.length());
 
@@ -686,7 +650,7 @@ public class SequenceAnalizer {
             StemLoop element = itr.next();
 
             try {
-                LoopMatcherThread.getMUTEX().acquire();
+                LoopMatcherThread.getMutex().acquire();
                 writer.writeNext(element.toRowCSV().split(";")); //NOI18N
             } catch (InterruptedException ex) {
                 out.println(java.text.MessageFormat.format(
@@ -694,7 +658,7 @@ public class SequenceAnalizer {
                                 .getString("ERROR_EX"), ex.getMessage()));
                 out.println("*Method: sequenceResearch*MUTEX");
             } finally {
-                LoopMatcherThread.getMUTEX().release();
+                LoopMatcherThread.getMutex().release();
             }
         }
 
@@ -834,18 +798,18 @@ public class SequenceAnalizer {
                 slr.checkPairments();
                 slr.checkInternalLoops();
                 slr.setNLoop(extIzq);
-                slr.setPercent_AG();
+                slr.setPercentAg();
                 slr.setEndsAt(loopPos + loopLength + extDer);
-                slr.setPercA_sequence(
+                slr.setPercASequence(
                         (rnaSequence.length() - rnaSequence.replace("A", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercG_sequence(
+                slr.setPercGSequence(
                         (rnaSequence.length() - rnaSequence.replace("G", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercC_sequence(
+                slr.setPercCSequence(
                         (rnaSequence.length() - rnaSequence.replace("C", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercU_sequence(
+                slr.setPercUSequence(
                         (rnaSequence.length() - rnaSequence.replace("U", "")
                                 .length()) / (float) rnaSequence.length());
 
@@ -870,7 +834,7 @@ public class SequenceAnalizer {
             StemLoop element = itr.next();
 
             try {
-                LoopMatcherThread.getMUTEX().acquire();
+                LoopMatcherThread.getMutex().acquire();
                 writer.writeNext(element.toRowCSV().split(";")); //NOI18N
             } catch (InterruptedException ex) {
                 out.println(java.text.MessageFormat.format(
@@ -878,7 +842,7 @@ public class SequenceAnalizer {
                                 .getString("ERROR_EX"), ex.getMessage()));
                 out.println("*Method: sequenceResearch*MUTEX");
             } finally {
-                LoopMatcherThread.getMUTEX().release();
+                LoopMatcherThread.getMutex().release();
             }
         }
 
@@ -930,7 +894,6 @@ public class SequenceAnalizer {
                     pCds = ((FeatureInterface) pFastaSeq.getFeaturesByType("CDS").toArray()[0]).getSource();
                 }
             } else {
-                // ..must be reviewed..
                 String[] auxH = pFastaSeq.getOriginalHeader().split("@");
                 pGene = auxH[0];
                 pSynonym = auxH[1];
@@ -1012,7 +975,6 @@ public class SequenceAnalizer {
             int length = maxLength;
             slr = new StemLoop(inputType);
 
-            // ..must be reviewed..
             checkInputType(inputType, slr, fastaSeq, gene, synonym, note, id, cds);
 
             try {  // 1. extract the full stem-loop sequence
@@ -1122,19 +1084,19 @@ public class SequenceAnalizer {
                     }
                 }
                 slr.setNLoop(extIzq);
-                slr.setPercent_AG();
+                slr.setPercentAg();
 
                 slr.setEndsAt(loopFinder.end() + extDer);
-                slr.setPercA_sequence(
+                slr.setPercASequence(
                         (rnaSequence.length() - rnaSequence.replace("A", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercG_sequence(
+                slr.setPercGSequence(
                         (rnaSequence.length() - rnaSequence.replace("G", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercC_sequence(
+                slr.setPercCSequence(
                         (rnaSequence.length() - rnaSequence.replace("C", "")
                                 .length()) / (float) rnaSequence.length());
-                slr.setPercU_sequence(
+                slr.setPercUSequence(
                         (rnaSequence.length() - rnaSequence.replace("U", "")
                                 .length()) / (float) rnaSequence.length());
 
@@ -1159,14 +1121,14 @@ public class SequenceAnalizer {
             StemLoop element = itr.next();
 
             try {
-                LoopMatcherThread.getMUTEX().acquire();
+                LoopMatcherThread.getMutex().acquire();
                 writer.writeNext(element.toRowCSV().split(";")); //NOI18N
             } catch (InterruptedException ex) {
                 out.println(java.text.MessageFormat.format(
                         getBundle().getString("ERROR_EX"), ex.getMessage()));
                 out.println("*Method: sequenceExtendedResearch*MUTEX");
             } finally {
-                LoopMatcherThread.getMUTEX().release();
+                LoopMatcherThread.getMutex().release();
             }
         }
 
@@ -1424,68 +1386,6 @@ public class SequenceAnalizer {
             regExp = regExp.replaceAll("V", "[CGA]"); //$NON-NLS-1$
         }
         return regExp;
-    }
-
-    /**
-     * To search for repeated tracts as CA[N]
-     *
-     * @param rnaSequence
-     * @param slippage
-     * @param nMin
-     * @return
-     * @note Not tested yet
-     */
-    public final static int findSlippageSequence(String rnaSequence, String slippage,
-                                                 int nMin) {
-
-        int init = 0, n = 0, position = 0, indexOf;
-
-        indexOf = rnaSequence.indexOf(slippage, init);
-
-        while (indexOf > 0) {
-
-            if (init == 0) {
-                position = indexOf;
-            }
-
-            init = indexOf + slippage.length();
-            n++;
-
-            indexOf = rnaSequence.indexOf(slippage, init);
-        }
-
-        if (n >= nMin) {
-            return position;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * Older function to check for potential pairments inside the loop
-     *
-     * @param loop
-     * @return True if the loop if free of pairments
-     * @note Replaced by isValidHairpin
-     */
-    public final static boolean checkInternalPairments(String loop) {
-        char base1, base2;
-        boolean ret = true;
-
-        // Check if loop is good (There's no pairment between his bases)
-        if (loop.length() > 5) {
-            for (int i = 0; i < 1/*loop.length()/2 - 1*/; i++) {
-
-                base1 = loop.charAt(i);
-                base2 = loop.charAt(loop.length() - 1 - i);
-
-                if (SequenceAnalizer.isComplementaryRNAWooble(base1, base2)
-                        || SequenceAnalizer.isComplementaryRNA(base1, base2)) {
-                    ret = false;
-                }
-            }
-        }
-        return ret;
     }
 
     /**

@@ -55,7 +55,6 @@ public class Generic extends SourceFile {
      * @param id
      */
     public void setGenericTags(String id) {
-        // TODO Auto-generated method stub
         setGeneID(id.replace(';', '-'));
     }
 

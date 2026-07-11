@@ -17,11 +17,22 @@
  */
 package com.eljaguar.mvnlaslo.core;
 
-import com.eljaguar.mvnlaslo.io.*;
+import com.eljaguar.mvnlaslo.io.BioMartFasta;
+import com.eljaguar.mvnlaslo.io.EnsemblFasta;
+import com.eljaguar.mvnlaslo.io.FlyBaseFasta;
+import com.eljaguar.mvnlaslo.io.GenBank;
+import com.eljaguar.mvnlaslo.io.Generic;
+import com.eljaguar.mvnlaslo.io.InputSequence;
+import com.eljaguar.mvnlaslo.io.SourceFile;
+import com.eljaguar.mvnlaslo.io.Vienna;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 import static com.eljaguar.mvnlaslo.core.SequenceAnalizer.reverseSequence;
 import static java.lang.System.out;
@@ -39,7 +50,7 @@ public class StemLoop {
     private static boolean hasAdditionalSequence;
     private static boolean hasTwoSenses;
     private final List<BaseVariable> patternVariables;
-    private SourceFile id_fasta;
+    private SourceFile idFasta;
     private InputSequence mode;
     private String rnaHairpinSequence;
     private String loop;
@@ -55,14 +66,14 @@ public class StemLoop {
     private int internalLoops;
     private char predecessor2Loop;
     private char predecessorLoop;
-    private double percent_AG;
-    private double percent_GU;
-    private double percent_CG;
-    private double percent_AU;
-    private double percA_sequence;
-    private double percG_sequence;
-    private double percC_sequence;
-    private double percU_sequence;
+    private double percentAg;
+    private double percentGu;
+    private double percentCg;
+    private double percentAu;
+    private double percASequence;
+    private double percGSequence;
+    private double percCSequence;
+    private double percUSequence;
     private double relativePos;
     private boolean reversed;
     private double mfe;
@@ -78,43 +89,42 @@ public class StemLoop {
 
         switch (mode) {
             case ENSEMBL:
-                this.id_fasta = new EnsemblFasta();
+                this.idFasta = new EnsemblFasta();
                 break;
 
             case FLYBASE:
-                this.id_fasta = new FlyBaseFasta();
+                this.idFasta = new FlyBaseFasta();
                 break;
 
             case BIOMART:
-                this.id_fasta = new BioMartFasta();
+                this.idFasta = new BioMartFasta();
                 break;
 
             case GENERIC:
-                this.id_fasta = new Generic();
+                this.idFasta = new Generic();
                 break;
 
             case GENBANK:
-                this.id_fasta = new GenBank();
+                this.idFasta = new GenBank();
                 break;
 
             case VIENNA:
-                this.id_fasta = new Vienna();
+                this.idFasta = new Vienna();
                 break;
 
         }
 
-        //this.stemLoopId = 0;
         this.loop = ""; //$NON-NLS-1$
         this.rnaHairpinSequence = null;
         this.sequenceLength = 0;
-        this.percent_AG = 0;
-        this.percent_GU = 0;
-        this.percent_CG = 0;
-        this.percent_AU = 0;
-        this.percA_sequence = 0;
-        this.percC_sequence = 0;
-        this.percG_sequence = 0;
-        this.percU_sequence = 0;
+        this.percentAg = 0;
+        this.percentGu = 0;
+        this.percentCg = 0;
+        this.percentAu = 0;
+        this.percASequence = 0;
+        this.percCSequence = 0;
+        this.percGSequence = 0;
+        this.percUSequence = 0;
         this.loopPattern = "";
         this.endsAt = 0;
         this.startsAt = 0;
@@ -182,7 +192,6 @@ public class StemLoop {
             senseColumn = "Sense" + SourceFile.ROW_DELIMITER;
         }
 
-        //StemLoop.COLUMN_VARS.sort(null);
         return header
                 + "LoopPattern" + SourceFile.ROW_DELIMITER
                 + "TerminalPair" + SourceFile.ROW_DELIMITER
@@ -384,7 +393,7 @@ public class StemLoop {
      * @return
      */
     public String getGeneID() {
-        return this.getId_fasta().getGeneID();
+        return this.getIdFasta().getGeneID();
     }
 
     /**
@@ -392,8 +401,8 @@ public class StemLoop {
      * @return
      */
     public String getGeneSymbol() {
-        if (this.getId_fasta().getGeneSymbol() != null) {
-            return this.getId_fasta().getGeneSymbol();
+        if (this.getIdFasta().getGeneSymbol() != null) {
+            return this.getIdFasta().getGeneSymbol();
         } else {
             return "";
         }
@@ -404,7 +413,7 @@ public class StemLoop {
      * @return
      */
     public String getGUPairs() {
-        long pairs = Math.round(this.getPercent_GU() * this.getPairments());
+        long pairs = Math.round(this.getPercentGu() * this.getPairments());
 
         return pairs + "";
     }
@@ -451,7 +460,6 @@ public class StemLoop {
             for (BaseVariable baseV : patternVariables) {
                 if (baseV.getPosition() == i) {
                     baseV.setValue(loop.charAt(i));
-                    //out.println(baseV); //test
                 }
             }
         }
@@ -525,106 +533,106 @@ public class StemLoop {
      *
      * @return
      */
-    public double getPercA_sequence() {
-        return percA_sequence;
+    public double getPercASequence() {
+        return percASequence;
     }
 
     /**
      *
-     * @param percA_sequence
+     * @param percASequence
      */
-    public final void setPercA_sequence(float percA_sequence) {
-        this.percA_sequence = percA_sequence;
+    public final void setPercASequence(float percASequence) {
+        this.percASequence = percASequence;
     }
 
     /**
-     * @param percA_sequence the percA_sequence to set
+     * @param percASequence the percASequence to set
      */
-    public void setPercA_sequence(double percA_sequence) {
-        this.percA_sequence = percA_sequence;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public double getPercC_sequence() {
-        return percC_sequence;
-    }
-
-    /**
-     *
-     * @param percC_sequence
-     */
-    public final void setPercC_sequence(float percC_sequence) {
-        this.percC_sequence = percC_sequence;
-    }
-
-    /**
-     * @param percC_sequence the percC_sequence to set
-     */
-    public void setPercC_sequence(double percC_sequence) {
-        this.percC_sequence = percC_sequence;
+    public void setPercASequence(double percASequence) {
+        this.percASequence = percASequence;
     }
 
     /**
      *
      * @return
      */
-    public double getPercent_AG() {
-        return percent_AG;
+    public double getPercCSequence() {
+        return percCSequence;
+    }
+
+    /**
+     *
+     * @param percCSequence
+     */
+    public final void setPercCSequence(float percCSequence) {
+        this.percCSequence = percCSequence;
+    }
+
+    /**
+     * @param percCSequence the percCSequence to set
+     */
+    public void setPercCSequence(double percCSequence) {
+        this.percCSequence = percCSequence;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public double getPercentAg() {
+        return percentAg;
     }
 
     /**
      * @param percent_AG the percent_AG to set
      */
-    public void setPercent_AG(double percent_AG) {
-        this.percent_AG = percent_AG;
+    public void setPercentAg(double percent_AG) {
+        this.percentAg = percent_AG;
     }
 
     /**
      *
      * @return
      */
-    public double getPercent_AU() {
-        return percent_AU;
+    public double getPercentAu() {
+        return percentAu;
     }
 
     /**
      * @param percent_AU the percent_AU to set
      */
-    public void setPercent_AU(double percent_AU) {
-        this.percent_AU = percent_AU;
+    public void setPercentAu(double percent_AU) {
+        this.percentAu = percent_AU;
     }
 
     /**
      *
      * @return
      */
-    public double getPercent_CG() {
-        return percent_CG;
+    public double getPercentCg() {
+        return percentCg;
     }
 
     /**
      * @param percent_CG the percent_CG to set
      */
-    public void setPercent_CG(double percent_CG) {
-        this.percent_CG = percent_CG;
+    public void setPercentCg(double percent_CG) {
+        this.percentCg = percent_CG;
     }
 
     /**
      *
      * @return
      */
-    public double getPercent_GU() {
-        return percent_GU;
+    public double getPercentGu() {
+        return percentGu;
     }
 
     /**
      *
      * @param wooble
      */
-    public void setPercent_GU(int wooble) {
+    public void setPercentGu(int wooble) {
         float percentGU;
         int size;
         String aux = getRnaHairpinSequence();
@@ -633,60 +641,60 @@ public class StemLoop {
         aux = aux.substring(0, size);
 
         percentGU = (float) wooble / aux.length();
-        this.setPercent_GU(percentGU);
+        this.setPercentGu(percentGU);
     }
 
     /**
      * @param percent_GU the percent_GU to set
      */
-    public void setPercent_GU(double percent_GU) {
-        this.percent_GU = percent_GU;
+    public void setPercentGu(double percent_GU) {
+        this.percentGu = percent_GU;
     }
 
     /**
      *
      * @return
      */
-    public double getPercG_sequence() {
-        return percG_sequence;
+    public double getPercGSequence() {
+        return percGSequence;
     }
 
     /**
      *
-     * @param percG_sequence
+     * @param percGSequence
      */
-    public void setPercG_sequence(float percG_sequence) {
-        this.percG_sequence = percG_sequence;
+    public void setPercGSequence(float percGSequence) {
+        this.percGSequence = percGSequence;
     }
 
     /**
-     * @param percG_sequence the percG_sequence to set
+     * @param percGSequence the percGSequence to set
      */
-    public void setPercG_sequence(double percG_sequence) {
-        this.percG_sequence = percG_sequence;
+    public void setPercGSequence(double percGSequence) {
+        this.percGSequence = percGSequence;
     }
 
     /**
      *
      * @return
      */
-    public double getPercU_sequence() {
-        return percU_sequence;
+    public double getPercUSequence() {
+        return percUSequence;
     }
 
     /**
      *
-     * @param percU_sequence
+     * @param percUSequence
      */
-    public void setPercU_sequence(float percU_sequence) {
-        this.percU_sequence = percU_sequence;
+    public void setPercUSequence(float percUSequence) {
+        this.percUSequence = percUSequence;
     }
 
     /**
-     * @param percU_sequence the percU_sequence to set
+     * @param percUSequence the percUSequence to set
      */
-    public void setPercU_sequence(double percU_sequence) {
-        this.percU_sequence = percU_sequence;
+    public void setPercUSequence(double percUSequence) {
+        this.percUSequence = percUSequence;
     }
 
     /**
@@ -820,11 +828,11 @@ public class StemLoop {
      * @return
      */
     public String getTranscriptID() {
-        return this.getId_fasta().getTranscriptID();
+        return this.getIdFasta().getTranscriptID();
     }
 
     public void setLocation(int pos) {
-        ((GenBank) getId_fasta()).setLocation(pos);
+        ((GenBank) getIdFasta()).setLocation(pos);
     }
 
     /**
@@ -843,11 +851,6 @@ public class StemLoop {
         }
 
         // Count internal loops and internalLoops
-    /*mismatch = StringUtils.countMatches(this.viennaStructure, "(.(")
-                + StringUtils.countMatches(this.viennaStructure, ").)");
-
-        bulge = StringUtils.countMatches(this.viennaStructure, "..(")
-                + StringUtils.countMatches(this.viennaStructure, ")..");*/
         try {
             firstIzq = this.getViennaStructure().lastIndexOf('(');
             int firstDer = this.getViennaStructure().indexOf(')');
@@ -860,9 +863,7 @@ public class StemLoop {
                     }
 
                     if (getViennaStructure().charAt(firstDer) == ')') {
-                        if (/*SequenceAnalizer.isComplementaryRNAWooble(
-                          seq.charAt(i), seq.charAt(firstDer))*/
-                                (seq.charAt(i) == 'U' && seq.charAt(firstDer) == 'G')
+                        if ((seq.charAt(i) == 'U' && seq.charAt(firstDer) == 'G')
                                         || (seq.charAt(i) == 'G'
                                         && seq.charAt(firstDer) == 'U')) {
                             aux.setCharAt(i, '{');
@@ -892,9 +893,9 @@ public class StemLoop {
             out.println("checkPairments-ERROR: " + e.getMessage());
         }
         this.setHairpinStructure(aux.toString());
-        this.setPercent_AU(AU / (double) (AU + CG + woobleCount));
-        this.setPercent_CG(CG / (double) (AU + CG + woobleCount));
-        this.setPercent_GU(woobleCount / (double) (AU + CG + woobleCount));
+        this.setPercentAu(AU / (double) (AU + CG + woobleCount));
+        this.setPercentCg(CG / (double) (AU + CG + woobleCount));
+        this.setPercentGu(woobleCount / (double) (AU + CG + woobleCount));
     }
 
     /**
@@ -963,7 +964,7 @@ public class StemLoop {
             }
         } catch (Exception ex) {
             out.println("\nERROR: " + ex.getMessage());
-            out.println(this.getId_fasta().toRowCSV());
+            out.println(this.getIdFasta().toRowCSV());
             out.println(this);
         }
     }
@@ -971,7 +972,7 @@ public class StemLoop {
     /**
      *
      */
-    public void setPercent_AG() {
+    public void setPercentAg() {
 
         float myPercent_AG = 0;
         int count;
@@ -985,7 +986,7 @@ public class StemLoop {
             myPercent_AG = count / (float) aux.length();
         }
 
-        this.setPercent_AG(myPercent_AG);
+        this.setPercentAg(myPercent_AG);
     }
 
     /**
@@ -1030,7 +1031,7 @@ public class StemLoop {
     /**
      *
      */
-    public void setPercent_AU() {
+    public void setPercentAu() {
         float percentAU;
         int count = 0;
         int size;
@@ -1047,13 +1048,13 @@ public class StemLoop {
 
         percentAU = count / (float) size;
 
-        this.setPercent_AU(percentAU);
+        this.setPercentAu(percentAU);
     }
 
     /**
      *
      */
-    public void setPercent_CG() {
+    public void setPercentCg() {
         float percentCG;
         int count = 0;
         int size;
@@ -1070,7 +1071,7 @@ public class StemLoop {
 
         percentCG = count / (float) size;
 
-        this.setPercent_CG(percentCG);
+        this.setPercentCg(percentCG);
     }
 
     /**
@@ -1080,16 +1081,16 @@ public class StemLoop {
     public void setTags(String id) {
         switch (this.getMode()) {
             case ENSEMBL:
-                ((EnsemblFasta) getId_fasta()).setEnsemblTags(id);
+                ((EnsemblFasta) getIdFasta()).setEnsemblTags(id);
                 break;
             case FLYBASE:
-                ((FlyBaseFasta) getId_fasta()).setFlyBaseTags(id);
+                ((FlyBaseFasta) getIdFasta()).setFlyBaseTags(id);
                 break;
             case BIOMART:
-                ((BioMartFasta) getId_fasta()).setBioMartTags(id);
+                ((BioMartFasta) getIdFasta()).setBioMartTags(id);
                 break;
             case GENERIC:
-                ((Generic) getId_fasta()).setGenericTags(id);
+                ((Generic) getIdFasta()).setGenericTags(id);
                 break;
         }
     }
@@ -1105,11 +1106,11 @@ public class StemLoop {
     public void setTags(String gene, String synonym, String transcript,
                         String description,
                         String cds) {
-        getId_fasta().setGeneID(gene);
-        getId_fasta().setTranscriptID(transcript);
-        ((GenBank) getId_fasta()).setDescription(description);
-        ((GenBank) getId_fasta()).setCDS(cds);
-        ((GenBank) getId_fasta()).setSynonym(synonym);
+        getIdFasta().setGeneID(gene);
+        getIdFasta().setTranscriptID(transcript);
+        ((GenBank) getIdFasta()).setDescription(description);
+        ((GenBank) getIdFasta()).setCDS(cds);
+        ((GenBank) getIdFasta()).setSynonym(synonym);
     }
 
     /**
@@ -1118,7 +1119,7 @@ public class StemLoop {
      */
     @Override
     public String toString() {
-        return "{" + this.id_fasta.getGeneID() + "; "
+        return "{" + this.idFasta.getGeneID() + "; "
                 + this.startsAt + "; "
                 + this.endsAt + "; "
                 + this.loop + "; "
@@ -1168,7 +1169,7 @@ public class StemLoop {
             senseValue = this.isReverse() + SourceFile.ROW_DELIMITER;
         }
 
-        return this.getId_fasta().toRowCSV()
+        return this.getIdFasta().toRowCSV()
                 + this.getLoopPattern() + SourceFile.ROW_DELIMITER
                 + this.getTerminalPair() + SourceFile.ROW_DELIMITER
                 + this.getPredecessor2Loop() + SourceFile.ROW_DELIMITER //n-2
@@ -1186,14 +1187,14 @@ public class StemLoop {
                 + this.getSequenceLength() + SourceFile.ROW_DELIMITER
                 + this.getStartsAt() + SourceFile.ROW_DELIMITER
                 + this.getEndsAt() + SourceFile.ROW_DELIMITER
-                + getFormattedNumber(this.getPercA_sequence()) + SourceFile.ROW_DELIMITER
-                + getFormattedNumber(this.getPercC_sequence()) + SourceFile.ROW_DELIMITER
-                + getFormattedNumber(this.getPercG_sequence()) + SourceFile.ROW_DELIMITER
-                + getFormattedNumber(this.getPercU_sequence()) + SourceFile.ROW_DELIMITER
-                + getFormattedNumber(this.getPercent_AU()) + SourceFile.ROW_DELIMITER
-                + getFormattedNumber(this.getPercent_CG()) + SourceFile.ROW_DELIMITER
-                + getFormattedNumber(this.getPercent_GU()) + SourceFile.ROW_DELIMITER
-                + getFormattedNumber(this.getPercent_AG()) + SourceFile.ROW_DELIMITER
+                + getFormattedNumber(this.getPercASequence()) + SourceFile.ROW_DELIMITER
+                + getFormattedNumber(this.getPercCSequence()) + SourceFile.ROW_DELIMITER
+                + getFormattedNumber(this.getPercGSequence()) + SourceFile.ROW_DELIMITER
+                + getFormattedNumber(this.getPercUSequence()) + SourceFile.ROW_DELIMITER
+                + getFormattedNumber(this.getPercentAu()) + SourceFile.ROW_DELIMITER
+                + getFormattedNumber(this.getPercentCg()) + SourceFile.ROW_DELIMITER
+                + getFormattedNumber(this.getPercentGu()) + SourceFile.ROW_DELIMITER
+                + getFormattedNumber(this.getPercentAg()) + SourceFile.ROW_DELIMITER
                 + getFormattedNumber(this.getMfe(), 5) + SourceFile.ROW_DELIMITER
                 + getFormattedNumber(this.getRelativePos()) + SourceFile.ROW_DELIMITER
                 + senseValue
@@ -1232,17 +1233,17 @@ public class StemLoop {
     }
 
     /**
-     * @return the id_fasta
+     * @return the idFasta
      */
-    public SourceFile getId_fasta() {
-        return id_fasta;
+    public SourceFile getIdFasta() {
+        return idFasta;
     }
 
     /**
-     * @param id_fasta the id_fasta to set
+     * @param idFasta the idFasta to set
      */
-    public void setId_fasta(SourceFile id_fasta) {
-        this.id_fasta = id_fasta;
+    public void setIdFasta(SourceFile idFasta) {
+        this.idFasta = idFasta;
     }
 
     /**

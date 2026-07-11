@@ -21,7 +21,11 @@ import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.features.FeatureInterface;
 import org.biojava.nbio.core.sequence.features.Qualifier;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,30 +45,6 @@ public class UShuffle {
 
     private static final String COMMAND_SHUFFLE = "./ext/ushuffle.exe";
     private static final String RANDOM_PATH = "\\shuffled";
-
-    /**
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-
-        String path = "C:\\Users\\David\\Documents\\NetBeans"
-                + "Projects\\lasloProject\\LASLO\\ext";
-        String ext = ".fasta";
-        String fileName = "fruitfly_chen";
-
-        out.println("Iniciando...");
-
-        // Generation of the iterator of id,sequence
-        LinkedHashMap<String, DNASequence> fasta = null;
-        try {
-            fasta = (LinkedHashMap<String, DNASequence>) readFastaDNASequence(new File("./ext/" + fileName + ext), false);
-        } catch (IOException ex) {
-            Logger.getLogger(UShuffle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        makeShuffleSequences(path, fileName, fasta, 5, 2, false);
-
-    }
 
     /**
      *
