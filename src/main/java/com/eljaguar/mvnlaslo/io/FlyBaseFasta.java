@@ -68,149 +68,141 @@ public class FlyBaseFasta extends SourceFile {
     /**
      * @return the CHECKSUM
      */
-    public static String getCHECKSUM() {
+    public static String getChecksumTag() {
         return CHECKSUM;
     }
 
     /**
      * @param aCHECKSUM the CHECKSUM to set
      */
-    public static void setCHECKSUM(String aCHECKSUM) {
+    public static void setChecksumTag(String aCHECKSUM) {
         CHECKSUM = aCHECKSUM;
     }
 
     /**
      * @return the DBXREF
      */
-    public static String getDBXREF() {
+    public static String getDbxrefTag() {
         return DBXREF;
     }
 
     /**
      * @param aDBXREF the DBXREF to set
      */
-    public static void setDBXREF(String aDBXREF) {
+    public static void setDbxrefTag(String aDBXREF) {
         DBXREF = aDBXREF;
     }
 
     /**
      * @return the GENE_ID
      */
-    public static String getGENE_ID() {
+    public static String getGeneIdTag() {
         return GENE_ID;
     }
 
     /**
      * @param aGENE_ID the GENE_ID to set
      */
-    public static void setGENE_ID(String aGENE_ID) {
+    public static void setGeneIdTag(String aGENE_ID) {
         GENE_ID = aGENE_ID;
     }
 
     /**
      * @return the HEADER
      */
-    public static String getHEADER() {
+    public static String getHeader() {
         return HEADER;
     }
 
     /**
      * @param aHEADER the HEADER to set
      */
-    public static void setHEADER(String aHEADER) {
+    public static void setHeader(String aHEADER) {
         HEADER = aHEADER;
     }
 
     /**
      * @return the LOCATION
      */
-    public static String getLOCATION() {
+    public static String getLocationTag() {
         return LOCATION;
     }
 
     /**
      * @param aLOCATION the LOCATION to set
      */
-    public static void setLOCATION(String aLOCATION) {
+    public static void setLocationTag(String aLOCATION) {
         LOCATION = aLOCATION;
     }
 
     /**
      * @return the NAME
      */
-    public static String getNAME() {
+    public static String getNameTag() {
         return NAME;
     }
 
     /**
      * @param aNAME the NAME to set
      */
-    public static void setNAME(String aNAME) {
+    public static void setNameTag(String aNAME) {
         NAME = aNAME;
     }
 
     /**
      * @return the RELEASE
      */
-    public static String getRELEASE() {
+    public static String getReleaseTag() {
         return RELEASE;
     }
 
     /**
      * @param aRELEASE the RELEASE to set
      */
-    public static void setRELEASE(String aRELEASE) {
+    public static void setReleaseTag(String aRELEASE) {
         RELEASE = aRELEASE;
     }
 
     /**
      * @return the SCORE
      */
-    public static String getSCORE() {
+    public static String getScoreTag() {
         return SCORE;
     }
 
     /**
      * @param aSCORE the SCORE to set
      */
-    public static void setSCORE(String aSCORE) {
+    public static void setScoreTag(String aSCORE) {
         SCORE = aSCORE;
     }
 
     /**
      * @return the SPECIES
      */
-    public static String getSPECIES() {
+    public static String getSpeciesTag() {
         return SPECIES;
     }
 
     /**
      * @param aSPECIES the SPECIES to set
      */
-    public static void setSPECIES(String aSPECIES) {
+    public static void setSpeciesTag(String aSPECIES) {
         SPECIES = aSPECIES;
     }
 
     /**
      * @return the TYPE
      */
-    public static String getTYPE() {
+    public static String getTypeTag() {
         return TYPE;
     }
 
     /**
      * @param aTYPE the TYPE to set
      */
-    public static void setTYPE(String aTYPE) {
+    public static void setTypeTag(String aTYPE) {
         TYPE = aTYPE;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static String getHeader() {
-        return FlyBaseFasta.getHEADER();
     }
 
     @Override
@@ -257,128 +249,128 @@ public class FlyBaseFasta extends SourceFile {
         //}
 
         // get location
-        index = idSequence.indexOf(FlyBaseFasta.getLOCATION());
+        index = idSequence.indexOf(FlyBaseFasta.getLocationTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(';');
 
             if (index2 > 0) {
-                aux = idsequence.substring(FlyBaseFasta.getLOCATION().length(), index2);
+                aux = idsequence.substring(FlyBaseFasta.getLocationTag().length(), index2);
             } else {
-                aux = idsequence.substring(FlyBaseFasta.getLOCATION().length());
+                aux = idsequence.substring(FlyBaseFasta.getLocationTag().length());
             }
 
             setLocation(aux.trim());
         }
 
         // get name
-        index = idsequence.indexOf(FlyBaseFasta.getNAME());
+        index = idsequence.indexOf(FlyBaseFasta.getNameTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(';');
 
             if (index2 > 0) {
-                aux = idsequence.substring(FlyBaseFasta.getNAME().length(), index2);
+                aux = idsequence.substring(FlyBaseFasta.getNameTag().length(), index2);
             } else {
-                aux = idsequence.substring(FlyBaseFasta.getNAME().length());
+                aux = idsequence.substring(FlyBaseFasta.getNameTag().length());
             }
 
             setName(aux.trim());
         }
 
         // get dbxref
-        index = idsequence.indexOf(FlyBaseFasta.getDBXREF());
+        index = idsequence.indexOf(FlyBaseFasta.getDbxrefTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(';');
 
             if (index2 > 0) {
-                aux = idsequence.substring(FlyBaseFasta.getDBXREF().length(), index2);
+                aux = idsequence.substring(FlyBaseFasta.getDbxrefTag().length(), index2);
             } else {
-                aux = idsequence.substring(FlyBaseFasta.getDBXREF().length());
+                aux = idsequence.substring(FlyBaseFasta.getDbxrefTag().length());
             }
 
             setDbxref(aux.trim());
         }
 
         // get score
-        index = idsequence.indexOf(FlyBaseFasta.getSCORE());
+        index = idsequence.indexOf(FlyBaseFasta.getScoreTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(';');
 
             if (index2 > 0) {
-                aux = idsequence.substring(FlyBaseFasta.getSCORE().length(), index2);
+                aux = idsequence.substring(FlyBaseFasta.getScoreTag().length(), index2);
             } else {
-                aux = idsequence.substring(FlyBaseFasta.getSCORE().length());
+                aux = idsequence.substring(FlyBaseFasta.getScoreTag().length());
             }
 
             setScore(aux.trim());
         }
 
         // get checksum
-        index = idsequence.indexOf(FlyBaseFasta.getCHECKSUM());
+        index = idsequence.indexOf(FlyBaseFasta.getChecksumTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(';');
 
             if (index2 > 0) {
-                aux = idsequence.substring(FlyBaseFasta.getCHECKSUM().length(), index2);
+                aux = idsequence.substring(FlyBaseFasta.getChecksumTag().length(), index2);
             } else {
-                aux = idsequence.substring(FlyBaseFasta.getCHECKSUM().length());
+                aux = idsequence.substring(FlyBaseFasta.getChecksumTag().length());
             }
 
             setChecksum(aux.trim());
         }
 
         // get GeneID
-        index = idsequence.indexOf(FlyBaseFasta.getGENE_ID());
+        index = idsequence.indexOf(FlyBaseFasta.getGeneIdTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(';');
 
             if (index2 > 0) {
-                aux = idsequence.substring(FlyBaseFasta.getGENE_ID().length(), index2);
+                aux = idsequence.substring(FlyBaseFasta.getGeneIdTag().length(), index2);
             } else {
-                aux = idsequence.substring(FlyBaseFasta.getGENE_ID().length());
+                aux = idsequence.substring(FlyBaseFasta.getGeneIdTag().length());
             }
 
             setGeneID(aux.trim());
         }
 
         // get release
-        index = idsequence.indexOf(FlyBaseFasta.getRELEASE());
+        index = idsequence.indexOf(FlyBaseFasta.getReleaseTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(';');
 
             if (index2 > 0) {
-                aux = idsequence.substring(FlyBaseFasta.getRELEASE().length(), index2);
+                aux = idsequence.substring(FlyBaseFasta.getReleaseTag().length(), index2);
             } else {
-                aux = idsequence.substring(FlyBaseFasta.getRELEASE().length());
+                aux = idsequence.substring(FlyBaseFasta.getReleaseTag().length());
             }
 
             setRelease(aux.trim());
         }
 
         // get specie
-        index = idsequence.indexOf(FlyBaseFasta.getSPECIES());
+        index = idsequence.indexOf(FlyBaseFasta.getSpeciesTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(';');
 
             if (index2 > 0) {
-                aux = idsequence.substring(FlyBaseFasta.getSPECIES().length(), index2);
+                aux = idsequence.substring(FlyBaseFasta.getSpeciesTag().length(), index2);
             } else {
-                aux = idsequence.substring(FlyBaseFasta.getSPECIES().length());
+                aux = idsequence.substring(FlyBaseFasta.getSpeciesTag().length());
             }
 
             setSpecies(aux.trim());

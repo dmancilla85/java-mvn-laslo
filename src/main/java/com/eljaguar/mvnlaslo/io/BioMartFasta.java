@@ -51,14 +51,14 @@ public class BioMartFasta extends SourceFile {
     /**
      * @return the nCols
      */
-    public static int getnCols() {
+    public static int getNumCols() {
         return nCols;
     }
 
     /**
      * @param anCols the nCols to set
      */
-    public static void setnCols(int anCols) {
+    public static void setNumCols(int anCols) {
         nCols = anCols;
     }
 
@@ -69,7 +69,7 @@ public class BioMartFasta extends SourceFile {
     public static String getHeader() {
         StringBuilder header = new StringBuilder();
 
-        for (int i = 0; i < getnCols(); i++) {
+        for (int i = 0; i < getNumCols(); i++) {
             header.append("Column").append(i + 1).append(ROW_DELIMITER);
         }
 
