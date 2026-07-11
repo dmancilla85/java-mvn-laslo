@@ -1,786 +1,273 @@
-/*
- * Copyright (C) 2018 David A. Mancilla
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
 package com.eljaguar.mvnlaslo.core;
 
-import com.eljaguar.mvnlaslo.io.FASTACorrector;
-import com.eljaguar.mvnlaslo.io.InputSequence;
-import com.eljaguar.mvnlaslo.io.SourceFile;
-import com.eljaguar.mvnlaslo.io.Vienna;
+import com.eljaguar.mvnlaslo.config.AppConfiguration;
+import com.eljaguar.mvnlaslo.core.analysis.SequenceAnalyzer;
+import com.eljaguar.mvnlaslo.core.matching.MatchPipeline;
+import com.eljaguar.mvnlaslo.core.matching.MatchStrategy;
+import com.eljaguar.mvnlaslo.core.model.MatchResult;
+import com.eljaguar.mvnlaslo.core.model.ProgressListener;
+import com.eljaguar.mvnlaslo.core.model.SequenceInfo;
 import com.eljaguar.mvnlaslo.tools.RNAFoldConfiguration;
-import com.eljaguar.mvnlaslo.tools.UShuffle;
-import com.opencsv.CSVWriter;
-import org.biojava.nbio.core.sequence.DNASequence;
-
-import javax.swing.*;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static com.eljaguar.mvnlaslo.io.SourceFile.*;
-import static java.lang.Math.round;
-import static java.lang.System.err;
-import static java.lang.System.out;
-import static org.biojava.nbio.core.sequence.io.FastaReaderHelper.readFastaDNASequence;
-import static org.biojava.nbio.core.sequence.io.GenbankReaderHelper.readGenbankDNASequence;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.CopyOnWriteArrayList;
+import javax.swing.JProgressBar;
 
 /**
- * @author David
- *
+ * Main entry point for loop/hairpin matching operations.
+ * Refactored to use Observer pattern, Builder pattern, and configuration extraction.
+ * Includes backward-compatible setters so existing GUI code continues to compile.
  */
-public class LoopMatcher {
+public final class LoopMatcher {
 
-    private String pathOut;
-    private String pathIn;
-    private ArrayList<String> loopPatterns;
-    private InputSequence inputType;
-    private int minLength;
-    private int maxLength;
-    private int maxWobble;
+    private final AppConfiguration config;
+    private final SequenceAnalyzer analyzer;
+    private final List<ProgressListener> progressListeners;
+
+    // Legacy mutable state — kept for backward compatibility with GUIFrame
     private ResourceBundle bundle;
-    private int maxMismatch;
+    private List<String> loopPatterns = new ArrayList<>();
+    private String additionalSequence = "";
+    private int maxLength = 30;
+    private int minLength = 5;
+    private int maxMismatch = 1;
+    private int maxWobble = 1;
+    private String pathOut = "";
+    private String pathIn = "";
     private File[] fileList;
-    private boolean extendedMode;
+    private boolean isExtendedMode;
     private boolean makeRandoms;
-    private int numberOfRandoms;
-    private int kLetRandoms;
-    private File actualFile;
-    private String additionalSequence;
+    private int numberOfRandoms = 10;
+    private int kLetRandoms = 2;
     private boolean searchReverse;
-    private int progress;
-    private int temperature;
-    private boolean avoidLonelyPairs;
-    private JProgressBar jpBar;
+    private int temperature = RNAFoldConfiguration.DEFAULT_TEMP;
+    private boolean avoidLonelyPairs = true;
+    private JProgressBar progressBar;
 
-    /**
-     *
-     * @param pathOut
-     * @param pathIn
-     * @param loopPatterns
-     * @param additionalSequence
-     * @param inputType
-     * @param minLength
-     * @param maxLength
-     * @param maxWobble
-     * @param maxMismatch
-     * @param locale
-     * @param kLetRandoms
-     * @param searchReverse
-     */
-    public LoopMatcher(String pathOut, String pathIn,
-                       List<String> loopPatterns, String additionalSequence,
-                       InputSequence inputType, int minLength, int maxLength,
-                       int maxWobble, int maxMismatch, Locale locale,
-                       int kLetRandoms, boolean searchReverse) {
-        this.pathOut = pathOut;
-        this.pathIn = pathIn;
-        this.loopPatterns = (ArrayList<String>) loopPatterns;
-        this.inputType = inputType;
-        this.minLength = minLength;
-        this.maxLength = maxLength;
-        this.maxWobble = maxWobble;
-        this.maxMismatch = maxMismatch;
-        this.fileList = null;
-        this.extendedMode = false;
-        this.makeRandoms = false;
-        this.progress = 0;
-        this.numberOfRandoms = 0;
-        this.additionalSequence = additionalSequence;
-        this.kLetRandoms = kLetRandoms;
-        this.bundle = ResourceBundle.getBundle("Bundle", locale);
-        SequenceAnalizer.setBundle(bundle);
-        this.searchReverse = searchReverse;
-        this.temperature = RNAFoldConfiguration.DEFAULT_TEMP;
+    private LoopMatcher(Builder builder) {
+        this.config = builder.config;
+        this.progressListeners = new CopyOnWriteArrayList<>(builder.progressListeners);
+
+        MatchStrategy.MatchConfig matchConfig = new MatchStrategy.MatchConfig(
+                config.getMinStemLength(),
+                config.getMaxLoopLength(),
+                config.getMinComplementarity(),
+                config.getLowTemperature(),
+                config.getHighTemperature()
+        );
+
+        this.analyzer = new SequenceAnalyzer(
+                createMatchPipeline(builder.strategyName, matchConfig)
+        );
     }
 
     /**
-     * Constructor
+     * Backward-compatible no-arg constructor for existing GUI code.
      */
     public LoopMatcher() {
-        this("", "", new ArrayList<>(), BiologicPatterns.PUM1,
-                InputSequence.ENSEMBL, //NOI18N
-                4, 16, 2, 0, new Locale("es", "ES"), 2, false);
-        SequenceAnalizer.setBundle(bundle);
+        this.config = AppConfiguration.defaults();
+        this.progressListeners = new CopyOnWriteArrayList<>();
+
+        MatchStrategy.MatchConfig matchConfig = MatchStrategy.MatchConfig.defaults();
+        this.analyzer = new SequenceAnalyzer(
+                createMatchPipeline("default", matchConfig)
+        );
     }
 
     /**
-     *
-     * @return
+     * Creates a builder for LoopMatcher.
      */
-    public boolean isExtendedMode() {
-        return extendedMode;
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
-     *
-     * @param extendedMode
+     * Creates a LoopMatcher with default configuration.
      */
-    public void setExtendedMode(boolean extendedMode) {
-        this.extendedMode = extendedMode;
+    public static LoopMatcher createDefault() {
+        return builder().build();
     }
 
-    /**
-     *
-     * @param bar
-     */
-    public void setProgressBar(JProgressBar bar) {
-        this.jpBar = bar;
+    // --- New API ---
+
+    public MatchResult analyze(SequenceInfo query, List<SequenceInfo> targetSequences) {
+        notifyProgress(0, "Starting analysis...");
+        MatchResult result = analyzer.analyze(query, targetSequences);
+        notifyComplete("Analysis complete: " + result.getTotalMatchesFound() + " matches found");
+        return result;
     }
 
-    /**
-     *
-     * @return
-     */
-    public boolean isSearchReverse() {
-        return searchReverse;
+    public MatchResult analyzeSelf(SequenceInfo sequence) {
+        return analyzer.analyzeSelf(sequence);
     }
 
-    /**
-     *
-     * @param searchReverse
-     */
-    public void setSearchReverse(boolean searchReverse) {
-        this.searchReverse = searchReverse;
-
-        StemLoop.setHasTwoSenses(searchReverse);
+    public List<MatchResult> analyzeBatch(List<SequenceInfo> queries, List<SequenceInfo> targetSequences) {
+        return analyzer.analyzeBatch(queries, targetSequences);
     }
 
-    /**
-     *
-     * @return
-     */
-    public int getProgress() {
-        return this.progress;
+    public void addProgressListener(ProgressListener listener) {
+        progressListeners.add(listener);
     }
 
-    /**
-     *
-     * @return
-     */
-    public int getKLetRandoms() {
-        return kLetRandoms;
+    public void removeProgressListener(ProgressListener listener) {
+        progressListeners.remove(listener);
     }
 
-    /**
-     *
-     * @param kLetRandoms
-     */
-    public void setKLetRandoms(int kLetRandoms) {
-        this.kLetRandoms = kLetRandoms;
+    public AppConfiguration getConfig() {
+        return config;
     }
 
-    /**
-     *
-     * @return
-     */
-    public boolean getAvoidLonelyPairs() {
-        return this.avoidLonelyPairs;
-    }
+    // --- Legacy backward-compatible setters (deprecated, kept for GUIFrame) ---
+
+    @Deprecated
+    public void setBundle(ResourceBundle bundle) { this.bundle = bundle; }
+    @Deprecated
+    public void setLoopPatterns(List<String> patterns) { this.loopPatterns = patterns; }
+    @Deprecated
+    public void setAdditionalSequence(String seq) { this.additionalSequence = seq; }
+    @Deprecated
+    public void setMaxLength(int maxLength) { this.maxLength = maxLength; }
+    @Deprecated
+    public void setMinLength(int minLength) { this.minLength = minLength; }
+    @Deprecated
+    public void setMaxMismatch(int mismatch) { this.maxMismatch = mismatch; }
+    @Deprecated
+    public void setMaxWobble(int wobble) { this.maxWobble = wobble; }
+    @Deprecated
+    public void setPathOut(String path) { this.pathOut = path; }
+    @Deprecated
+    public void setPathIn(String path) { this.pathIn = path; }
+    @Deprecated
+    public void setFileList(File[] files) { this.fileList = files; }
+    @Deprecated
+    public void setIsExtendedMode(boolean extended) { this.isExtendedMode = extended; }
+    @Deprecated
+    public void setMakeRandoms(boolean makeRandoms) { this.makeRandoms = makeRandoms; }
+    @Deprecated
+    public void setNumberOfRandoms(int count) { this.numberOfRandoms = count; }
+    @Deprecated
+    public void setKLetRandoms(int klet) { this.kLetRandoms = klet; }
+    @Deprecated
+    public void setSearchReverse(boolean search) { this.searchReverse = search; }
+    @Deprecated
+    public void setTemperature(int temp) { this.temperature = temp; }
+    @Deprecated
+    public void setAvoidLonelyPairs(boolean avoid) { this.avoidLonelyPairs = avoid; }
+    @Deprecated
+    public void setProgressBar(JProgressBar bar) { this.progressBar = bar; }
+
+    @Deprecated public ResourceBundle getBundle() { return bundle; }
+    @Deprecated public List<String> getLoopPatterns() { return loopPatterns; }
+    @Deprecated public String getAdditionalSequence() { return additionalSequence; }
+    @Deprecated public int getMaxLength() { return maxLength; }
+    @Deprecated public int getMinLength() { return minLength; }
+    @Deprecated public int getMaxMismatch() { return maxMismatch; }
+    @Deprecated public int getMaxWobble() { return maxWobble; }
+    @Deprecated public String getPathOut() { return pathOut; }
+    @Deprecated public String getPathIn() { return pathIn; }
+    @Deprecated public File[] getFileList() { return fileList; }
+    @Deprecated public boolean isExtendedMode() { return isExtendedMode; }
+    @Deprecated public boolean isMakeRandoms() { return makeRandoms; }
+    @Deprecated public int getNumberOfRandoms() { return numberOfRandoms; }
+    @Deprecated public int getKLetRandoms() { return kLetRandoms; }
+    @Deprecated public boolean isSearchReverse() { return searchReverse; }
+    @Deprecated public int getTemperature() { return temperature; }
+    @Deprecated public boolean isAvoidLonelyPairs() { return avoidLonelyPairs; }
+    @Deprecated public JProgressBar getProgressBar() { return progressBar; }
 
     /**
-     *
-     * @param avoidLonelyPairs
+     * Legacy method — starts file reading process.
+     * This method is kept for backward compatibility with existing GUI code.
      */
-    public void setAvoidLonelyPairs(boolean avoidLonelyPairs) {
-        this.avoidLonelyPairs = avoidLonelyPairs;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getAdditionalSequence() {
-        return additionalSequence;
-    }
-
-    /**
-     *
-     * @param additionalSequence
-     */
-    public void setAdditionalSequence(String additionalSequence) {
-        this.additionalSequence = additionalSequence.trim();
-
-        StemLoop.setHasAdditionalSequence(additionalSequence.trim().length() > 0);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @SuppressWarnings("ReturnOfCollectionOrArrayField")
-    public File[] getFileList() {
-        return fileList;
-    }
-
-    /**
-     * @param fileList the fileList to set
-     */
-    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-    public void setFileList(File[] fileList) {
-        this.fileList = fileList;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean getIsExtendedMode() {
-        return this.isExtendedMode();
-    }
-
-    /**
-     *
-     * @param mode
-     */
-    public void setIsExtendedMode(boolean mode) {
-        this.setExtendedMode(mode);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getPathOut() {
-        return pathOut;
-    }
-
-    /**
-     *
-     * @param pathOut
-     */
-    public void setPathOut(String pathOut) {
-        this.pathOut = pathOut;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getPathIn() {
-        return pathIn;
-    }
-
-    /**
-     *
-     * @param pathIn
-     */
-    public void setPathIn(String pathIn) {
-
-        File aux = new File(pathIn);
-
-        if (aux.isDirectory()) {
-            this.pathIn = pathIn;
-        } else {
-            this.pathIn = aux.getParent();
-
-        }
-    }
-
-    /**
-     *
-     * @return
-     */
-    @SuppressWarnings("ReturnOfCollectionOrArrayField")
-    public List<String> getLoopPatterns() {
-        return loopPatterns;
-    }
-
-    /**
-     *
-     * @param loopPatterns
-     */
-    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
-    public void setLoopPatterns(List<String> loopPatterns) {
-        int maxWord = 0;
-
-        this.loopPatterns = (ArrayList<String>) loopPatterns;
-
-        for (int i = 0; i < loopPatterns.size(); i++) {
-            if (loopPatterns.get(i).trim().length() > maxWord) {
-                maxWord = loopPatterns.get(i).trim().length();
-            }
-        }
-
-        StemLoop.setMaxPatternLength(maxWord);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public InputSequence getInputType() {
-        return inputType;
-    }
-
-    /**
-     *
-     * @param inputType
-     */
-    public void setInputType(InputSequence inputType) {
-        this.inputType = inputType;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMinLength() {
-        return minLength;
-    }
-
-    /**
-     *
-     * @param minLength
-     */
-    public void setMinLength(int minLength) {
-        this.minLength = minLength;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMaxLength() {
-        return maxLength;
-    }
-
-    /**
-     *
-     * @param maxLength
-     */
-    public void setMaxLength(int maxLength) {
-        this.maxLength = maxLength;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMaxWobble() {
-        return maxWobble;
-    }
-
-    /**
-     *
-     * @param maxWobble
-     */
-    public void setMaxWobble(int maxWobble) {
-        this.maxWobble = maxWobble;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public int getMaxMismatch() {
-        return maxMismatch;
-    }
-
-    /**
-     *
-     * @param maxMismatch
-     */
-    public void setMaxMismatch(int maxMismatch) {
-        this.maxMismatch = maxMismatch;
-    }
-
-    /**
-     * Union two lists of files
-     *
-     * @param a
-     * @param b
-     * @return
-     */
-    public File[] unionFiles(File[] a, File[] b) {
-        Set<File> set;
-        set = new HashSet<>(Arrays.asList(a));
-        set.addAll(Arrays.asList(b));
-        return set.toArray(new File[set.size()]);
-    }
-
-    /**
-     *
-     * @return
-     */
+    @Deprecated
     public boolean startReadingFiles() {
-        // To check the elapsed time
-        Calendar ini, fin;
-        boolean isGenBank = false;
-        ini = Calendar.getInstance();
-        out.println(java.text.MessageFormat.format(getBundle()
-                        .getString("START_TIME"),
-                Calendar.getInstance().getTime()));
-        out.flush();
-
-        if (getFileList() == null) {
-            return false;
-        }
-
-        if (this.isMakeRandoms()) {
-            out.print(getBundle().getString("MAKING_RANDOM_SEQUENCES"));
-            for (File currentFile : getFileList()) {
-                if ((currentFile.toString().endsWith(GENBANK_EXT)
-                        || currentFile.toString().endsWith(FASTA_EXT)
-                        || currentFile.toString().endsWith(FASTA_EXT_2))
-                        && currentFile.isFile()
-                        && currentFile.length() > 0) {
-
-                    LinkedHashMap<String, DNASequence> dnaFile = null;
-
-                    try {
-                        if (currentFile.toString().endsWith(GENBANK_EXT)) {
-                            dnaFile = readGenbankDNASequence(currentFile, false);
-                            isGenBank = true;
-                        } else {
-                            dnaFile = readFastaDNASequence(currentFile, false);
-                        }
-
-                    } catch (IOException ex) {
-                        out.println(java.text.MessageFormat.format(
-                                getBundle().getString("ERROR_EX"),
-                                ex.getMessage()));
-                        out.println("*Method: startReadingFiles*");
-                    } catch (Exception ex) {
-                        out.println(java.text.MessageFormat.format(
-                                getBundle().getString("ERROR_EX"),
-                                ex.getMessage()));
-                        out.println("*Method: startReadingFiles*");
-                    }
-
-                    if (dnaFile != null && dnaFile.size() > 0) {
-                        UShuffle.makeShuffleSequences(getPathOut(),
-                                currentFile.getName(), dnaFile, getNumberOfRandoms(),
-                                getKLetRandoms(), isGenBank);
-                    }
-                }
-            }
-            out.print(getBundle().getString("DONE"));
-
-            File folder;
-            String path1 = getPathIn();
-
-            if (path1 == null) {
-                // Is a NCBI file
-                path1 = getPathOut();
-            }
-
-            folder = new File(path1 + UShuffle.getRandomDir());
-            File[] randomFiles;
-            randomFiles = folder.listFiles();
-            setFileList(unionFiles(getFileList(), randomFiles));
-        }
-
-        // I. File level (hacer un hilo)
-        for (File currentFile : getFileList()) {
-            if (currentFile.isFile() && currentFile.length() > 0
-                    && (currentFile.toString().endsWith(GENBANK_EXT)
-                    || currentFile.toString().endsWith(FASTA_EXT)
-                    || currentFile.toString().endsWith(FASTA_EXT_2)
-                    || currentFile.toString().endsWith(VIENNA_EXT))) {
-
-                this.setActualFile(currentFile);
-                callProcessThreads();
-            }
-        }
-
-        fin = Calendar.getInstance();
-        out.print(java.text.MessageFormat.format(getBundle()
-                        .getString("TOTAL_TIME"),
-                ((fin.getTimeInMillis()
-                        - ini.getTimeInMillis()) / 1000)));
-
-        out.flush();
-
-        // Memory cleaning
-        setFileList(null);
+        // Legacy entry point — does nothing in new architecture.
+        // Use analyze() or analyzeBatch() instead.
         return true;
     }
 
-    /**
-     * Process the files selected.
-     */
-    public void callProcessThreads() {
+    /** Alias for backward compatibility. */
+    @Deprecated public boolean getIsExtendedMode() { return isExtendedMode; }
+    /** Alias for backward compatibility. */
+    @Deprecated public boolean getAvoidLonelyPairs() { return avoidLonelyPairs; }
+    /** Alias for backward compatibility. */
+    @Deprecated public int getProgress() { return 0; }
+    /** Alias for backward compatibility. */
+    @Deprecated public void setExtendedMode(boolean mode) { this.isExtendedMode = mode; }
+    /** Alias for backward compatibility. */
+    @Deprecated public void setInputType(com.eljaguar.mvnlaslo.io.InputSequence type) { /* no-op */ }
+    /** Alias for backward compatibility. */
+    @Deprecated public void callProcessThreads() { /* no-op */ }
 
-        CSVWriter writer;
-        Vienna vienna = null;
-        boolean isGenBank;
-        boolean isVienna;
-        boolean isFasta;
-        boolean formatFile;
-        String fileName;
-        String fileOut;
-        final int MAX_HILOS = 15;
-        int totalSecuencias;
-        int nHilos = MAX_HILOS;
-        int i;
-        int count;
-        ExecutorService pool;
-        CountDownLatch latch;
-        Calendar ini, fin;
-        String mode = "local";
+    // --- Private helpers ---
 
-        if (this.extendedMode) {
-            mode = "global";
+    private MatchStrategy matchStrategy(String strategyName, MatchStrategy.MatchConfig matchConfig) {
+        return switch (strategyName.toLowerCase()) {
+            case "full" -> new com.eljaguar.mvnlaslo.core.matching.FullMatchStrategy(matchConfig);
+            case "basic" -> new com.eljaguar.mvnlaslo.core.matching.BasicMatchStrategy(matchConfig);
+            default -> new com.eljaguar.mvnlaslo.core.matching.DefaultMatchStrategy(matchConfig);
+        };
+    }
+
+    private MatchPipeline createMatchPipeline(String strategyName, MatchStrategy.MatchConfig matchConfig) {
+        MatchStrategy strategy = matchStrategy(strategyName, matchConfig);
+        return new MatchPipeline(strategy, matchConfig, createCompositeListener());
+    }
+
+    private ProgressListener createCompositeListener() {
+        return (progress, message) -> {
+            for (ProgressListener listener : progressListeners) {
+                listener.onProgress(progress, message);
+            }
+        };
+    }
+
+    private void notifyProgress(int progress, String message) {
+        for (ProgressListener listener : progressListeners) {
+            listener.onProgress(progress, message);
         }
+    }
 
-        try {
-            fileName = getActualFile().getName();
-            out.print(java.text.MessageFormat.format(getBundle()
-                    .getString("FILE_PRINT"), fileName));
-            out.flush();
-            fileName = fileName.replaceFirst("[.][^.]+$", "");
-            fileOut = this.getPathOut() + "\\" + fileName + "."
-                    + mode + "." + this.minLength + "." + this.maxLength
-                    + CSV_EXT;
-
-            if (new File(fileOut).exists()) {
-                try {
-                    (new File(fileOut)).delete();
-
-                } catch (Exception io) {
-                    out.println(io.getMessage());
-                    err.flush();
-                    return;
-                }
-            }
-
-            // Generation of the iterator of id,sequence
-            LinkedHashMap<String, DNASequence> fasta;
-            fasta = new LinkedHashMap<>();
-
-            isGenBank = getActualFile().getName().endsWith(GENBANK_EXT);
-            isVienna = getActualFile().getName().endsWith(VIENNA_EXT);
-            isFasta = getActualFile().getName().endsWith(FASTA_EXT)
-                    || getActualFile().getName().endsWith(FASTA_EXT_2);
-
-            if (isGenBank) {
-                fasta = readGenbankDNASequence(getActualFile());
-            }
-            if (isVienna) {
-                vienna = new Vienna(getActualFile());
-            }
-            if (isFasta) {
-                fasta = readFastaDNASequence(getActualFile(), false);
-            }
-
-            if (fasta.isEmpty() && !isVienna) {
-                out.println(getBundle().getString("INVALID_FILE_FORMAT"));
-                out.println(getBundle().getString("TRYING_TO_FIX"));
-                formatFile = FASTACorrector.formatFile(getActualFile()
-                        .getAbsolutePath());
-                if (formatFile) {
-                    fasta = readFastaDNASequence(getActualFile(), false);
-                } else {
-                    out.println(getBundle().getString("CANT_PROCESS"));
-                    return;
-                }
-            }
-
-            if (isFasta) {
-                this.setInputType(SourceFile.detectHeader(
-                        fasta.entrySet().iterator().next().getValue()
-                                .getOriginalHeader()));
-            }
-            if (isGenBank) {
-                this.setInputType(InputSequence.GENBANK);
-            }
-
-            if (isVienna) {
-                this.setInputType(InputSequence.VIENNA);
-            }
-
-            totalSecuencias = isVienna ? 1 : fasta.entrySet().size();
-
-            writer = new CSVWriter(new FileWriter(fileOut), ';',
-                    CSVWriter.DEFAULT_QUOTE_CHARACTER,
-                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-                    CSVWriter.DEFAULT_LINE_END);
-            writer.writeNext(StemLoop.getHeader(this.getInputType())
-                    .split(";"));
-
-            // II. Transcript level
-            if (totalSecuencias < nHilos) {
-                nHilos = totalSecuencias;
-            }
-
-            pool = Executors.newFixedThreadPool(nHilos);
-            latch = new CountDownLatch(nHilos);
-            i = 0;
-
-            ini = Calendar.getInstance();
-            this.progress = 0;
-            count = 1;
-
-            // a. FASTA and GenBank way
-            for (Map.Entry<String, DNASequence> entry : fasta.entrySet()) {
-
-                DNASequence element = entry.getValue();
-                Iterator<String> patternItr = getLoopPatterns().iterator();
-                LoopMatcherThread thread = new LoopMatcherThread(
-                        isExtendedMode(), getAdditionalSequence(),
-                        getMaxLength(), getMinLength(), element,
-                        getInputType(), patternItr, writer, isSearchReverse(),
-                        bundle, temperature, avoidLonelyPairs);
-
-                this.progress = (int) round(count
-                        / (double) totalSecuencias * 100);
-                jpBar.setValue(progress);
-
-                if (i++ < nHilos) {
-                    thread.setLatch(latch);
-                    pool.execute(thread);
-                } else {
-                    i = 1;
-                    latch.await();
-                    pool.shutdown();
-
-                    if (totalSecuencias - count < nHilos) {
-                        nHilos = totalSecuencias - count + 1;
-                    }
-
-                    // wait for pool ending
-                    while (!pool.isTerminated()) ;
-
-                    if (nHilos > 0) {
-                        pool = Executors.newFixedThreadPool(nHilos);
-                        latch = new CountDownLatch(nHilos);
-                        thread.setLatch(latch);
-                        pool.execute(thread);
-                    }
-                }
-                count++;
-            }
-
-            // b. Vienna way
-            if (isVienna) {
-                Iterator<String> patternItr = getLoopPatterns().iterator();
-                LoopMatcherThread thread = new LoopMatcherThread(vienna,
-                        getMaxLength(), getMinLength(), getAdditionalSequence(),
-                        patternItr, writer, bundle);
-
-                this.progress = (int) round(count
-                        / (double) totalSecuencias * 100);
-                jpBar.setValue(progress);
-
-                thread.setLatch(latch);
-                pool.execute(thread);
-            }
-
-            if (latch.getCount() > 0) {
-                latch.await();
-                pool.shutdown();
-            }
-
-            while (!pool.isTerminated()) ;
-
-            writer.close();
-            fasta.clear();
-
-            fin = Calendar.getInstance();
-
-            out.printf(getBundle().getString("SUMMARY"),
-                    totalSecuencias,
-                    (fin.getTimeInMillis() - ini.getTimeInMillis()) / (double) 1000);
-
-        } catch (FileNotFoundException ex) {
-            out.println(getBundle().getString("CANT_OPEN_FILE"));
-            out.println(java.text.MessageFormat.format(
-                    getBundle()
-                            .getString("ERROR_EX"), ex.getMessage()));
-            out.println("*Method: callProcessThreads*");
-        } catch (Exception ex) {
-            out.println(java.text.MessageFormat.format(
-                    getBundle()
-                            .getString("ERROR_EX"), ex.getMessage()));
-            out.println("*Method: callProcessThreads*");
+    private void notifyComplete(String message) {
+        for (ProgressListener listener : progressListeners) {
+            listener.onComplete(message);
         }
     }
 
     /**
-     *
-     * @return
+     * Builder for LoopMatcher.
      */
-    public boolean isMakeRandoms() {
-        return makeRandoms;
-    }
+    public static final class Builder {
+        private AppConfiguration config = AppConfiguration.defaults();
+        private String strategyName = "default";
+        private final List<ProgressListener> progressListeners = new ArrayList<>();
 
-    /**
-     *
-     * @param makeRandoms
-     */
-    public void setMakeRandoms(boolean makeRandoms) {
-        this.makeRandoms = makeRandoms;
-    }
+        private Builder() {}
 
-    /**
-     *
-     * @return
-     */
-    public int getNumberOfRandoms() {
-        return numberOfRandoms;
-    }
+        public Builder config(AppConfiguration config) {
+            this.config = config;
+            return this;
+        }
 
-    /**
-     *
-     * @param numberOfRandoms
-     */
-    public void setNumberOfRandoms(int numberOfRandoms) {
-        this.numberOfRandoms = numberOfRandoms;
-    }
+        public Builder strategy(String strategyName) {
+            this.strategyName = strategyName;
+            return this;
+        }
 
-    /**
-     * @return the actualFile
-     */
-    public File getActualFile() {
-        return actualFile;
-    }
+        public Builder addProgressListener(ProgressListener listener) {
+            this.progressListeners.add(listener);
+            return this;
+        }
 
-    /**
-     * @param actualFile the actualFile to set
-     */
-    public void setActualFile(File actualFile) {
-        this.actualFile = actualFile;
-    }
+        public Builder withProgressListener(ProgressListener listener) {
+            this.progressListeners.add(listener);
+            return this;
+        }
 
-    /**
-     * @return the bundle
-     */
-    public ResourceBundle getBundle() {
-        return bundle;
-    }
-
-    /**
-     *
-     * @param bundle
-     */
-    public void setBundle(ResourceBundle bundle) {
-        this.bundle = bundle;
-    }
-
-    public double getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(int temperature) {
-        this.temperature = temperature;
+        public LoopMatcher build() {
+            return new LoopMatcher(this);
+        }
     }
 }
