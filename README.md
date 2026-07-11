@@ -1,10 +1,8 @@
-# LoopMatcher (aka LASLO) v1.3.3 - README
-
-[![CodeQL](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml)
-[![Java CI with Maven](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml)
+# LoopMatcher (aka LASLO) v1.5.0 - README
 
 [![Java CI with Maven](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/maven.yml)
 [![CodeQL](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/dmancilla85/java-mvn-laslo/actions/workflows/codeql-analysis.yml)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=dmancilla85_java-mvn-laslo&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dmancilla85_java-mvn-laslo)
 
 ## Introduction
 
@@ -14,11 +12,18 @@ to generate random sequences with conservation of the k-nucleotide frequency.
 
 ## Requirements
 
-JAVA Runtime 8 - Latest update. https://www.java.com/en/download/ It's highly recommended to have a multicore processor
-to process large sequences. This version only runs in a Windows x64 SO, because of the external executables.
+Java 21 or later. https://adoptium.net/ It's highly recommended to have a multicore processor
+to process large sequences. This version only runs on Windows x64, because of the external executables (RNAfold.exe, ushuffle.exe).
 
 ## Latest releases
 
+- 1.5.0 11/07/2026 :
+    - Major codebase refactoring applying SOLID principles and design patterns (Strategy, Observer, Factory, Builder, Template Method, Facade)
+    - 48 unit tests added with JUnit 5
+    - Upgraded to Java 21, BioJava 7.2.5, OpenCSV 5.12.0
+    - Configurable thread pool size and external tool paths via AppConfiguration
+    - SonarCloud quality gate passing
+    - CI/CD modernization with CodeQL and SonarCloud analysis
 - 1.3.3 04/10/2020 :
     - Fixed bug with BioJava when downloading some GenBank files. Code and dependencies updated.
 - 1.3.2 20/08/2020 :
@@ -164,12 +169,12 @@ columns.***
    biological sequences while preserving the k-let counts. BMC Bioinformatics, 9:#192,
    2008. https://github.com/guma44/ushuffle
 
-3. BioJava (Core 4.2.0) - Andreas Prlic; Andrew Yates; Spencer E. Bliven; Peter W. Rose; Julius Jacobsen; Peter V.
+3. BioJava (Core 7.2.5) - Andreas Prlic; Andrew Yates; Spencer E. Bliven; Peter W. Rose; Julius Jacobsen; Peter V.
    Troshin; Mark Chapman; Jianjiong Gao; Chuan Hock Koh; Sylvain Foisy; Richard Holland; Gediminas Rimsa; Michael L.
    Heuer; H. Brandstatter-Muller; Philip E. Bourne; Scooter Willis. BioJava: an open-source framework for bioinformatics
    in 2012. Bioinformatics (2012) 28 (20): 2693-2695. https://github.com/biojava/biojava
 
-4. OpenCSV 4.1 - A Simple CSV Parser for Java under a commercial-friendly Apache 2.0
+4. OpenCSV 5.12.0 - A Simple CSV Parser for Java under a commercial-friendly Apache 2.0
    license https://sourceforge.net/projects/opencsv/
 
 5. Icon [Folder](https://thenounproject.com/icon/53223/)
