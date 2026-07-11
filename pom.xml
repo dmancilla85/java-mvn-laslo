@@ -64,7 +64,7 @@
                 <configuration>
                     <debug>true</debug>
                     <showDeprecation>true</showDeprecation>
-                    <release>25</release>
+                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>
