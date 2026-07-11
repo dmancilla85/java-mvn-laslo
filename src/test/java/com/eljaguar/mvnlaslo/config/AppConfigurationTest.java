@@ -23,7 +23,7 @@ class AppConfigurationTest {
     @Test
     void testBuilder() {
         AppConfiguration config = AppConfiguration.builder()
-                .threadPoolSize(10)
+                .threadPoolSize(4)
                 .lowTemperature(40.0)
                 .highTemperature(75.0)
                 .minStemLength(6)
@@ -33,7 +33,7 @@ class AppConfigurationTest {
                 .ncbiApiKey("test-key")
                 .build();
         
-        assertEquals(10, config.getThreadPoolSize());
+        assertEquals(4, config.getThreadPoolSize());
         assertEquals(40.0, config.getLowTemperature(), 0.001);
         assertEquals(75.0, config.getHighTemperature(), 0.001);
         assertEquals(6, config.getMinStemLength());
