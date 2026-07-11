@@ -24,6 +24,6 @@ jobs:
           cache: maven
 
       - name: Build and analyze
-        run: mvn -B package sonar:sonar -Dsonar.organization=dmancilla85 -Dsonar.projectKey=dmancilla85_java-mvn-laslo
+        run: mvn -B package sonar:sonar -Dsonar.organization=dmancilla85 -Dsonar.projectKey=dmancilla85_java-mvn-laslo -Dsonar.analysis.mode=CI
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
