@@ -13,7 +13,7 @@
         <dependency>
             <groupId>org.biojava</groupId>
             <artifactId>biojava-core</artifactId>
-            <version>7.2.5</version>
+            <version>7.2.6</version>
         </dependency>
         <!-- other biojava jars as needed -->
         <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
