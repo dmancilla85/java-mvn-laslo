@@ -4,6 +4,7 @@ on:
   push:
     branches: [ master ]
   pull_request:
+    # Los branches de abajo deben ser un subconjunto de los de arriba
     branches: [ master ]
   schedule:
     - cron: '0 14 * * 6'
@@ -16,7 +17,6 @@ jobs:
   analyze:
     name: Analyze
     runs-on: windows-latest
-
     strategy:
       fail-fast: false
       matrix:
