@@ -118,7 +118,8 @@ public class OSValidator {
                 String[] cmd = {"/bin/sh", "-c", command};
                 process = Runtime.getRuntime().exec(cmd);
             } else {
-                process = Runtime.getRuntime().exec(command);
+                String[] cmd = {"sh", "-c", command};
+                process = Runtime.getRuntime().exec(cmd);
             }
         } catch (IOException e) {
             out.println("Error: " + e.getMessage());

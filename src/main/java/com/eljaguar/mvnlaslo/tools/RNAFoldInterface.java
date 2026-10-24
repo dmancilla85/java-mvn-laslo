@@ -17,7 +17,11 @@
  */
 package com.eljaguar.mvnlaslo.tools;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -134,23 +138,6 @@ public class RNAFoldInterface {
      */
     public RNAFoldInterface(String sequence) {
         this(sequence, RNAFoldConfiguration.DEFAULT_TEMP, true);
-    }
-
-    /**
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-
-        String sequence = "UAGAGAUCUCUAUGUAUUUCCC";
-        RNAFoldInterface test;
-        try {
-            test = new RNAFoldInterface(sequence);
-            out.println(test);
-        } catch (Exception ex) {
-            Logger.getLogger(RNAFoldInterface.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
     }
 
     /**

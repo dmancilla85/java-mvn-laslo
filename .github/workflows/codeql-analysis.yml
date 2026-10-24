@@ -9,6 +9,10 @@ on:
   schedule:
     - cron: '0 14 * * 6'
 
+permissions:
+  security-events: write
+  contents: read
+
 jobs:
   analyze:
     name: Analyze
@@ -16,44 +20,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Opciones soportadas: ['csharp', 'cpp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift']
-        language: [ 'java-kotlin' ]
+        language: [ 'java' ]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        # Se debe obtener al menos los padres inmediatos para flujos de pull requests
-        fetch-depth: 2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        architecture: x64
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
-    # Si la ejecución fue activada por un pull request, revisa el head en lugar del merge commit
-    - run: git checkout HEAD^2
-      if: ${{ github.event_name == 'pull_request' }}
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
 
-    # Inicializa las herramientas de CodeQL para el escaneo
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
-      with:
-        languages: ${{ matrix.matrix.language }}
+      # Build
+      - name: Build with Maven
+        run: mvn -B package
 
-    # Almacena dependencias de maven
-    - name: Cache Maven packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
-
-    # Construcción
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4

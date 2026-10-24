@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -109,7 +110,7 @@ public class GUIFrame extends javax.swing.JFrame {
     public GUIFrame() throws IOException {
         loopMatcher = new LoopMatcher();
         isRunning = false;
-        this.locale = new Locale("en", "US");
+        this.locale = Locale.of("en", "US");
         this.bundle = getBundle("Bundle", locale);
         initComponents();
         this.jCBMIEnglish.setSelected(true);
@@ -217,7 +218,7 @@ public class GUIFrame extends javax.swing.JFrame {
 
             }
 
-            final URL url = new URL("http://www.google.com");
+            final URL url = URI.create("http://www.google.com").toURL();
             final URLConnection conn = url.openConnection();
             conn.connect();
             conn.getInputStream().close();
@@ -782,15 +783,12 @@ public class GUIFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTFPathInActionPerformed() {//GEN-FIRST:event_jTFPathInActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jTFPathInActionPerformed
 
     private void jTFPathOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTFPathOutActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jTFPathOutActionPerformed
 
     private void jButtonOutActionPerformed() {//GEN-FIRST:event_jButtonOutActionPerformed
-        // TODO add your handling code here:
         final JFileChooser fc = new JFileChooser();
         JFrame myFrame = new JFrame();
         File folder = null;
@@ -809,18 +807,14 @@ public class GUIFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonOutActionPerformed
 
     private void jMIExitActionPerformed() {//GEN-FIRST:event_jMIExitActionPerformed
-        // TODO add your handling code here:
         this.dispatchEvent(new WindowEvent(this, WINDOW_CLOSING));
     }//GEN-LAST:event_jMIExitActionPerformed
 
     private void jBtnStartActionPerformed() {//GEN-FIRST:event_jBtnStartActionPerformed
-        // TODO add your handling code here:
-        // Llamar a método unificador
         this.start();
     }//GEN-LAST:event_jBtnStartActionPerformed
 
     private void jSpinMinLengthStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinMinLengthStateChanged
-        // TODO add your handling code here:
         if (Integer.parseInt(this.jSpinMinLength.getValue().toString()) < 3) {
             this.jSpinMinLength.setValue(3);
         }
@@ -898,7 +892,6 @@ public class GUIFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void jcbExtendedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbExtendedActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jcbExtendedActionPerformed
 
     private void jcbMakeRandomsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbMakeRandomsActionPerformed
@@ -911,32 +904,26 @@ public class GUIFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jcbMakeRandomsActionPerformed
 
     private void jcbSearchInverseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbSearchInverseActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jcbSearchInverseActionPerformed
 
     private void jftkLetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jftkLetActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jftkLetActionPerformed
 
     private void jftAdditionalSeqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jftAdditionalSeqActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jftAdditionalSeqActionPerformed
     // End of variables declaration//GEN-END:variables
 
     private void jMIAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMIAboutActionPerformed
-        // TODO add your handling code here:
         AboutFrame af = new AboutFrame();
 
         af.setVisible(true);
     }//GEN-LAST:event_jMIAboutActionPerformed
 
     private void jTabInputStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabInputStateChanged
-        // TODO add your handling code here:
     }//GEN-LAST:event_jTabInputStateChanged
 
     private void jBtnStopActionPerformed(java.awt.event.ActionEvent evt) {
         //GEN-FIRST:event_jBtnStopActionPerformed
-        // TODO add your handling code here:
         if (worker != null && !worker.isCancelled() && !worker.isDone()) {
             worker.cancel(true);
             jProgressBar1.setValue(0);
@@ -946,11 +933,9 @@ public class GUIFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jBtnStopActionPerformed
 
     private void jProgressBar1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jProgressBar1PropertyChange
-        // TODO add your handling code here:
     }//GEN-LAST:event_jProgressBar1PropertyChange
 
     private void jsTemperatureStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jsTemperatureStateChanged
-        // TODO add your handling code here:
         Integer myValue = (Integer) this.jsTemperature.getValue();
 
         if (myValue < 0) {
@@ -965,7 +950,6 @@ public class GUIFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jsTemperatureStateChanged
 
     private void jCBMIEnglishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBMI_EnglishActionPerformed
-        // TODO add your handling code here
         if (this.jCBMIEnglish.isSelected()) {
             this.setDisplayLanguage("en", "US");
             this.jCBMISpanish.setSelected(false);
@@ -978,7 +962,6 @@ public class GUIFrame extends javax.swing.JFrame {
 
     private void jCBMISpanishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBMI_SpanishActionPerformed
 
-        // TODO add your handling code here
         if (this.jCBMISpanish.isSelected()) {
             this.setDisplayLanguage("es", "AR");
             this.jCBMIEnglish.setSelected(false);
@@ -990,11 +973,9 @@ public class GUIFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jCBMI_SpanishActionPerformed
 
     private void jcbAvoidLonePairsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbAvoidLonePairsActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jcbAvoidLonePairsActionPerformed
 
     private void jSetProxyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSetProxyActionPerformed
-        // TODO add your handling code here:
         new ProxyFrame().setVisible(true);
     }//GEN-LAST:event_jSetProxyActionPerformed
 
@@ -1017,7 +998,7 @@ public class GUIFrame extends javax.swing.JFrame {
      */
     private void setDisplayLanguage(String lang, String country) {
 
-        this.locale = new Locale(lang, country);
+        this.locale = Locale.of(lang, country);
         this.bundle = getBundle("Bundle", locale);
         jcbMakeRandoms.setText(bundle.getString("RANDOMIZE_CHECK")); // NOI18N
         jcbExtended.setText(bundle.getString("EXTENDED_MODE_CHECK")); // NOI18N

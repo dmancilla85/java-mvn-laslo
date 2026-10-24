@@ -34,7 +34,7 @@ public class EnsemblFasta extends SourceFile {
             + "TranscriptBiotype" + ROW_DELIMITER
             + "#Splice" + ROW_DELIMITER
             + "Description" + ROW_DELIMITER;
-    private String GENE = "gene:";
+    private String gene = "gene:";
     private String geneBiotype;
     private String transcriptBiotype;
     private String description;
@@ -59,76 +59,76 @@ public class EnsemblFasta extends SourceFile {
      * @return
      */
     public static String getHeader() {
-        return EnsemblFasta.getHEADER();
+        return HEADER;
     }
 
     /**
      * @return the DESCRIPTION
      */
-    public static String getDESCRIPTION() {
+    public static String getDescriptionDefault() {
         return DESCRIPTION;
     }
 
     /**
      * @param aDESCRIPTION the DESCRIPTION to set
      */
-    public static void setDESCRIPTION(String aDESCRIPTION) {
+    public static void setDescriptionDefault(String aDESCRIPTION) {
         DESCRIPTION = aDESCRIPTION;
     }
 
     /**
      * @return the GENE_BIOTYPE
      */
-    public static String getGENE_BIOTYPE() {
+    public static String getGeneBiotypeTag() {
         return GENE_BIOTYPE;
     }
 
     /**
      * @param aGENE_BIOTYPE the GENE_BIOTYPE to set
      */
-    public static void setGENE_BIOTYPE(String aGENE_BIOTYPE) {
+    public static void setGeneBiotypeTag(String aGENE_BIOTYPE) {
         GENE_BIOTYPE = aGENE_BIOTYPE;
     }
 
     /**
      * @return the GENE_SYMBOL
      */
-    public static String getGENE_SYMBOL() {
+    public static String getGeneSymbolTag() {
         return GENE_SYMBOL;
     }
 
     /**
      * @param aGENE_SYMBOL the GENE_SYMBOL to set
      */
-    public static void setGENE_SYMBOL(String aGENE_SYMBOL) {
+    public static void setGeneSymbolTag(String aGENE_SYMBOL) {
         GENE_SYMBOL = aGENE_SYMBOL;
     }
 
     /**
      * @return the HEADER
      */
-    public static String getHEADER() {
+    public static String getHeaderDefault() {
         return HEADER;
     }
 
     /**
      * @param aHEADER the HEADER to set
      */
-    public static void setHEADER(String aHEADER) {
+    public static void setHeaderDefault(String aHEADER) {
         HEADER = aHEADER;
     }
 
     /**
      * @return the TRANSCRIPT_BIOTYPE
      */
-    public static String getTRANSCRIPT_BIOTYPE() {
+    public static String getTranscriptBiotypeTag() {
         return TRANSCRIPT_BIOTYPE;
     }
 
     /**
      * @param aTRANSCRIPT_BIOTYPE the TRANSCRIPT_BIOTYPE to set
      */
-    public static void setTRANSCRIPT_BIOTYPE(String aTRANSCRIPT_BIOTYPE) {
+    public static void setTranscriptBiotypeTag(String aTRANSCRIPT_BIOTYPE) {
         TRANSCRIPT_BIOTYPE = aTRANSCRIPT_BIOTYPE;
     }
 
@@ -194,79 +194,79 @@ public class EnsemblFasta extends SourceFile {
         }
 
         // get GeneID
-        index = idSequence.indexOf(getGENE());
+        index = idSequence.indexOf(getGene());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(' ');
 
             if (index2 > 0) {
-                aux = idsequence.substring(getGENE().length(), index2);
+                aux = idsequence.substring(getGene().length(), index2);
             } else {
-                aux = idsequence.substring(getGENE().length());
+                aux = idsequence.substring(getGene().length());
             }
 
             setGeneID(aux.trim());
         }
 
         // get Gene Biotype
-        index = idsequence.indexOf(getGENE_BIOTYPE());
+        index = idsequence.indexOf(EnsemblFasta.getGeneBiotypeTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(' ');
 
             if (index2 > 0) {
-                aux = idsequence.substring(getGENE_BIOTYPE().length(), index2);
+                aux = idsequence.substring(EnsemblFasta.getGeneBiotypeTag().length(), index2);
             } else {
-                aux = idsequence.substring(getGENE_BIOTYPE().length());
+                aux = idsequence.substring(EnsemblFasta.getGeneBiotypeTag().length());
             }
 
             setGeneBiotype(aux.trim());
         }
         // get Trancript Biotype
-        index = idsequence.indexOf(EnsemblFasta.getTRANSCRIPT_BIOTYPE());
+        index = idsequence.indexOf(EnsemblFasta.getTranscriptBiotypeTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(' ');
 
             if (index2 > 0) {
-                aux = idsequence.substring(EnsemblFasta.getTRANSCRIPT_BIOTYPE().length(), index2);
+                aux = idsequence.substring(EnsemblFasta.getTranscriptBiotypeTag().length(), index2);
             } else {
-                aux = idsequence.substring(EnsemblFasta.getTRANSCRIPT_BIOTYPE().length());
+                aux = idsequence.substring(EnsemblFasta.getTranscriptBiotypeTag().length());
             }
 
             setTranscriptBiotype(aux.trim());
         }
 
         // get Gene Symbol
-        index = idsequence.indexOf(EnsemblFasta.getGENE_SYMBOL());
+        index = idsequence.indexOf(EnsemblFasta.getGeneSymbolTag());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.indexOf(' ');
 
             if (index2 > 0) {
-                aux = idsequence.substring(EnsemblFasta.getGENE_SYMBOL().length(), index2);
+                aux = idsequence.substring(EnsemblFasta.getGeneSymbolTag().length(), index2);
             } else {
-                aux = idsequence.substring(EnsemblFasta.getGENE_SYMBOL().length());
+                aux = idsequence.substring(EnsemblFasta.getGeneSymbolTag().length());
             }
 
             setGeneSymbol(aux.trim());
         }
 
         // Description
-        index = idsequence.indexOf(EnsemblFasta.getDESCRIPTION());
+        index = idsequence.indexOf(EnsemblFasta.getDescriptionDefault());
 
         if (index > 0) {
             idsequence = idsequence.substring(index);
             index2 = idsequence.lastIndexOf(':');
 
             if (index2 > 0) {
-                aux = idsequence.substring(EnsemblFasta.getDESCRIPTION().length(), idsequence.lastIndexOf(' '));
+                aux = idsequence.substring(EnsemblFasta.getDescriptionDefault().length(), idsequence.lastIndexOf(' '));
             } else {
-                aux = idsequence.substring(EnsemblFasta.getDESCRIPTION().length());
+                aux = idsequence.substring(EnsemblFasta.getDescriptionDefault().length());
             }
 
             setDescription(aux.trim());
@@ -275,17 +275,17 @@ public class EnsemblFasta extends SourceFile {
     }
 
     /**
-     * @return the GENE
+     * @return the gene
      */
-    public String getGENE() {
-        return GENE;
+    public String getGene() {
+        return gene;
     }
 
     /**
-     * @param GENE the GENE to set
+     * @param gene the gene to set
      */
-    public void setGENE(String GENE) {
-        this.GENE = GENE;
+    public void setGene(String gene) {
+        this.gene = gene;
     }
 
     /**

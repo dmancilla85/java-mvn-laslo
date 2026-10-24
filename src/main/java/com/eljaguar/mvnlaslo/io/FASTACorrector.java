@@ -33,10 +33,10 @@ import java.util.logging.Logger;
  */
 public class FASTACorrector {
 
-    protected final static String HEADER_START = ">";
-    protected final static String BLANK = " ";
-    protected final static String NEW_LINE = System.lineSeparator();
-    protected final static String HEADER_DESC = "Sequence ID";
+    protected static final String HEADER_START = ">";
+    protected static final String BLANK = " ";
+    protected static final String NEW_LINE = System.lineSeparator();
+    protected static final String HEADER_DESC = "Sequence ID";
 
     /**
      * Format bad FASTA files.

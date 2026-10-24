@@ -39,8 +39,8 @@ import static java.lang.System.out;
  */
 public class LoopMatcherThread implements Runnable {
 
-    private static Semaphore MUTEX = new Semaphore(1);
-    private static Semaphore SEM;
+    private static Semaphore mutex = new Semaphore(1);
+    private static Semaphore sem;
     private static boolean started = false;
     private final boolean extendedMode;
     private final boolean searchReverse;
@@ -100,7 +100,7 @@ public class LoopMatcherThread implements Runnable {
 
             out.println(java.text.MessageFormat.format(bundle
                     .getString("USING_N_CORES"), countThreads));
-            SEM = new Semaphore(countThreads);
+            sem = new Semaphore(countThreads);
             started = true;
         }
     }
@@ -140,38 +140,38 @@ public class LoopMatcherThread implements Runnable {
 
             out.println(java.text.MessageFormat.format(bundle
                     .getString("USING_N_CORES"), countThreads));
-            SEM = new Semaphore(countThreads);
+            sem = new Semaphore(countThreads);
             started = true;
         }
     }
 
     /**
      *
-     * @return the MUTEX
+     * @return the mutex
      */
-    public final static Semaphore getMUTEX() {
-        return MUTEX;
+    public final static Semaphore getMutex() {
+        return mutex;
     }
 
     /**
-     * @param aMUTEX the MUTEX to set
+     * @param aMutex the mutex to set
      */
-    public final static void setMUTEX(Semaphore aMUTEX) {
-        MUTEX = aMUTEX;
+    public final static void setMutex(Semaphore aMutex) {
+        mutex = aMutex;
     }
 
     /**
-     * @return the SEM
+     * @return the sem
      */
-    public final static Semaphore getSEM() {
-        return SEM;
+    public final static Semaphore getSem() {
+        return sem;
     }
 
     /**
-     * @param aSEM the SEM to set
+     * @param aSem the sem to set
      */
-    public final static void setSEM(Semaphore aSEM) {
-        SEM = aSEM;
+    public final static void setSem(Semaphore aSem) {
+        sem = aSem;
     }
 
     /**
@@ -231,7 +231,7 @@ public class LoopMatcherThread implements Runnable {
     private void runExtendedMode(RNAFoldInterface fold,
                                  String currentPattern) {
         try {
-            getSEM().acquire();
+            getSem().acquire();
             beginFullMatching(getDnaElement(),
                     fold.getStructure(),
                     currentPattern, getWriter(), false, getMaxLength(),
@@ -253,12 +253,12 @@ public class LoopMatcherThread implements Runnable {
                             .getString("ERROR_EX"), msg));
             out.println("1-Exception: " + ex);
         } finally {
-            getSEM().release();
+            getSem().release();
         }
 
         if (isSearchReverse()) {
             try {
-                getSEM().acquire();
+                getSem().acquire();
                 beginFullMatching(getDnaElement(),
                         fold.getStructure(),
                         currentPattern, getWriter(), true, getMaxLength(),
@@ -281,7 +281,7 @@ public class LoopMatcherThread implements Runnable {
                                 .getString("ERROR_EX"), msg));
                 out.println("2-Exception: " + ex);
             } finally {
-                getSEM().release();
+                getSem().release();
             }
         }
     }
@@ -294,23 +294,17 @@ public class LoopMatcherThread implements Runnable {
         RNAFoldInterface fold;
         String sequence = getDnaElement().getRNASequence()
                 .getSequenceAsString();
-        String idSeq = getDnaElement().getAccession().getID() + " - "
-                + getDnaElement().getAccession().getID();
+        String idSeq = getDnaElement().getAccession().getID();
 
         try {
 
             if (sequence.length() >= RNAFoldConfiguration.SEQUENCE_MAX_SIZE) {
+                int lengthCheckAux = 15;
                 String idAux;
-
-                if (idSeq == null) {
-                    idAux = "*";
+                if (idSeq.length() > lengthCheckAux) {
+                    idAux = idSeq.substring(0, lengthCheckAux - 1);
                 } else {
-                    int LENGTH_CHECK_AUX = 15;
-                    if (idSeq.length() > LENGTH_CHECK_AUX) {
-                        idAux = idSeq.substring(0, LENGTH_CHECK_AUX - 1);
-                    } else {
-                        idAux = idSeq;
-                    }
+                    idAux = idSeq;
                 }
 
                 out.println(idAux + " - Error: Provided sequence exceeds size limit of "
